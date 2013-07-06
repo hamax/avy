@@ -1,0 +1,21 @@
+application: avy-project
+version: 1
+runtime: go
+api_version: go1
+
+handlers:
+- url: /favicon\.ico
+  static_files: favicon.ico
+  upload: favicon\.ico
+- url: /css
+  static_dir: client/css
+- url: /img
+  static_dir: client/img
+- url: /js
+  static_dir: client/js
+- url: /libs
+  static_dir: client/libs
+- url: /partials
+  static_dir: client/partials
+- url: /.*
+  script: _go_app

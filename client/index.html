@@ -1,0 +1,76 @@
+{{define "index"}}
+<!DOCTYPE html>
+<html lang="en" ng-app="avy" ng-controller="RootCtrl">
+	<head>
+		<meta charset="utf-8">
+		<title>Avy</title>
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+		<meta name="description" content="">
+		<meta name="author" content="">
+
+		<!-- CSS -->
+		<link href="/libs/bootstrap/css/bootstrap.css" rel="stylesheet">
+		<link href="/libs/fileupload/style.css" rel="stylesheet">
+		<link href="/css/style.css" rel="stylesheet">
+		<link href="/libs/bootstrap/css/bootstrap-responsive.css" rel="stylesheet">
+
+		<!-- JS -->
+		<script>var data = {uploadUrl: '{{js .UploadUrl}}'};</script>
+		<script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+		<script src="//ajax.googleapis.com/ajax/libs/angularjs/1.0.7/angular.min.js"></script>
+		<script src="/libs/ui-bootstrap-0.4.0.min.js"></script>
+		<script src="/libs/fileupload/jquery.ui.widget.js"></script>
+		<script src="/libs/fileupload/jquery.iframe-transport.js"></script>
+		<script src="/libs/fileupload/jquery.fileupload.js"></script>
+		<script src="/libs/fileupload/jquery.knob.js"></script>
+		<script src="/js/main.js"></script>
+		<script src="/libs/fileupload/directive.js"></script>
+	</head>
+
+	<body>
+		<div class="navbar navbar-inverse navbar-fixed-top">
+			<div class="navbar-inner">
+				<div class="container-fluid">
+					<button type="button" class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+						<span class="icon-bar"></span>
+						<span class="icon-bar"></span>
+						<span class="icon-bar"></span>
+					</button>
+					<a class="brand" href="/">Avy</a>
+					<div class="nav-collapse collapse">
+						<div class="btn-group pull-right">
+							{{if .User}}
+								<a class="btn dropdown-toggle">
+									{{.User.Email}}
+									<span class="caret"></span>
+								</a>
+								<ul class="dropdown-menu">
+									<li><a href="/logout">Sign Out</a></li>
+								</ul>
+							{{else}}
+								<a class="btn" href="/login">Sign In</a>
+							{{end}}
+						</div>
+						<ul class="nav">
+							<li ng-class="{active: isActive('/dashboard')}"><a href="/dashboard">Dashboard</a></li>
+							<li ng-class="{active: isActive('/visualizations')}"><a href="/visualizations">Visualizations</a></li>
+							<li ng-class="{active: isActive('/modules')}"><a href="/modules">Modules</a></li>
+							<li ng-class="{active: isActive('/about')}"><a href="/about">About</a></li>
+						</ul>
+					</div><!--/.nav-collapse -->
+				</div>
+			</div>
+		</div>
+
+		<div class="container-fluid" ng-view>
+
+		</div><!--/.fluid-container-->
+
+		<hr/>
+
+		<footer>
+			<img style="display: block; float: right;" src="https://developers.google.com/appengine/images/appengine-noborder-120x30.gif" alt="Powered by Google App Engine" />
+		</footer>
+	</body>
+</html>
+{{end}}
