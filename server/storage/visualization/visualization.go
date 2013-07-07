@@ -7,16 +7,12 @@ import (
 	"net/http"
 
 	"server/storage"
+	"server/storage/file"
 )
 
 type Visualization struct {
 	Title string
-	Files []File
-}
-
-type File struct {
-	Filename string
-	BlobKey appengine.BlobKey
+	Files []file.File
 }
 
 func init() {
@@ -92,7 +88,7 @@ func filePost(w http.ResponseWriter, r *http.Request) interface{} {
 	}
 
 	// Add the new file
-	e.Files = append(e.Files, File{"test", files[0].BlobKey})
+	e.Files = append(e.Files, file.File{"test", files[0].BlobKey})
 	
 	// Save the visualization object
 	key, err = datastore.Put(c, key, &e)

@@ -1,3 +1,4 @@
+// Based on https://github.com/clouddueling/angularjs-drag-n-drop, modified for avy-project
 app.directive('ngFileUpload', function() {
   // Helper function that formats the file sizes
   function formatFileSize(bytes) {
@@ -19,7 +20,7 @@ app.directive('ngFileUpload', function() {
   return {
     restrict: 'A',
     link: function(scope, elem, attr, ctrl) {
-      var dragForm = "<form class='file-upload' method='post' action='" + data.uploadUrl + "' enctype='multipart/form-data'> \
+      var dragForm = "<form class='file-upload' method='post' enctype='multipart/form-data'> \
         <div class='drop'> \
           Drop Here<br> \
           <a>Browse</a> \
@@ -43,35 +44,50 @@ app.directive('ngFileUpload', function() {
         // This element will accept file drag/drop uploading
         dropZone: elem.find('.drop'),
 
+        singleFileUploads: false,
+
         // This function is called when a file is added to the queue;
         // either via the browse button, or via drag/drop:
         add: function (e, data) {
-          var tpl = $('<li class="working"><input type="text" value="0" data-width="48" data-height="48"'+
-            ' data-fgColor="#0788a5" data-readOnly="1" data-bgColor="#3e4043" /><p></p><span></span></li>');
+          data.context = [];
+          for (var i = 0; i < data.files.length; i++) {
+            var tpl = $('<li class="working"><input type="text" value="0" data-width="48" data-height="48"'+
+              ' data-fgColor="#0788a5" data-readOnly="1" data-bgColor="#3e4043" /><p></p><span></span></li>');
 
-          // Append the file name and file size
-          tpl.find('p').text(data.files[0].name)
-            .append('<i>' + formatFileSize(data.files[0].size) + '</i>');
+            // Append the file name and file size
+            tpl.find('p').text(data.files[i].name)
+              .append('<i>' + formatFileSize(data.files[i].size) + '</i>');
 
-          // Add the HTML to the UL element
-          data.context = tpl.appendTo(ul);
+            // Add the HTML to the UL element
+            data.context.push(tpl.appendTo(ul));
 
-          // Initialize the knob plugin
-          tpl.find('input').knob();
+            // Initialize the knob plugin
+            tpl.find('input').knob();
 
-          // Listen for clicks on the cancel icon
-          tpl.find('span').click(function(){
-            if(tpl.hasClass('working')){
-              jqXHR.abort();
-            }
+            // Listen for clicks on the cancel icon
+            tpl.find('span').click(function(){
+              if(tpl.hasClass('working')){
+                jqXHR.abort();
+              }
 
-            tpl.fadeOut(function(){
-              tpl.remove();
+              tpl.fadeOut(function(){
+                tpl.remove();
+              });
             });
-          });
+          }
 
           // Automatically upload the file once it is added to the queue
           var jqXHR = data.submit();
+        },
+
+        // Update upload url on submit (upload url-s are not reusable)
+        submit: function (e, data) {
+          var $this = $(this);
+          $.getJSON('/rest/uploadurl', function(result) {
+            data.url = result;
+            $this.fileupload('send', data);
+          });
+          return false;
         },
 
         done: function(e, data) {
@@ -86,10 +102,12 @@ app.directive('ngFileUpload', function() {
 
           // Update the hidden input field and trigger a change
           // so that the jQuery knob plugin knows to update the dial
-          data.context.find('input').val(progress).change();
+          for (var i = 0; i < data.context.length; i++) {
+            data.context[i].find('input').val(progress).change();
 
-          if(progress == 100){
-            data.context.removeClass('working');
+            if(progress == 100){
+              data.context[i].removeClass('working');
+            }
           }
         },
 
@@ -98,7 +116,9 @@ app.directive('ngFileUpload', function() {
             s.$eval(attr.error);
           });
 
-          data.context.addClass('error');
+          for (var i = 0; i < data.context.length; i++) {
+            data.context[i].addClass('error');
+          }
         }
       });
 

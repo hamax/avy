@@ -6,7 +6,6 @@ import (
 	"appengine/blobstore"
 	"html/template"
 	"net/http"
-	"net/url"
 	"io"
 	"fmt"
 )
@@ -15,7 +14,6 @@ var templates = template.Must(template.ParseGlob("client/index.html"))
 
 type IndexData struct {
 	User *user.User
-	UploadUrl *url.URL
 }
 
 func serveError(c appengine.Context, w http.ResponseWriter, err error) {
@@ -39,14 +37,7 @@ func root(w http.ResponseWriter, r *http.Request) {
 	// Get current user
 	u := user.Current(c)
 
-	// Get upload url
-	uploadUrl, err := blobstore.UploadURL(c, "/upload", nil)
-	if err != nil {
-		serveError(c, w, err)
-		return
-	}
-
-	templates.ExecuteTemplate(w, "index", IndexData{u, uploadUrl})
+	templates.ExecuteTemplate(w, "index", IndexData{u})
 }
 
 func loginHandle(w http.ResponseWriter, r *http.Request) {
@@ -107,7 +98,6 @@ func uploadHandle(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	//string(file[0].BlobKey)
 	fmt.Fprint(w, "ok")
 }
 
