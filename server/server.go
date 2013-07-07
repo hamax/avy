@@ -2,13 +2,29 @@ package server
 
 import (
 	"appengine"
-	"appengine/user"
 	"appengine/blobstore"
+	"appengine/user"
+	"github.com/gorilla/mux"
 	"html/template"
 	"net/http"
-	"io"
-	"fmt"
+
+	"server/api"
+	"server/common"
 )
+
+// dev
+const (
+	domain = "avy"
+	baseUrl = "http://www.avy/"
+)
+
+// prod
+/*
+const (
+	domain = "avy-project.appspot.com"
+	baseUrl = "http://www.avy-project.appspot.com/"
+)
+*/
 
 var templates = template.Must(template.ParseGlob("client/index.html"))
 
@@ -16,19 +32,29 @@ type IndexData struct {
 	User *user.User
 }
 
-func serveError(c appengine.Context, w http.ResponseWriter, err error) {
-        w.WriteHeader(http.StatusInternalServerError)
-        w.Header().Set("Content-Type", "text/plain")
-        io.WriteString(w, "Internal Server Error")
-        c.Errorf("%v", err)
+func init() {
+	r := mux.NewRouter()
+
+	// Register redirect handle for main domain
+	r.HandleFunc("/{path:.*}", redirect).Host(domain)
+
+	// Register handles for www subdomain
+	www := r.Host("www." + domain).Subrouter()
+	api.Init(www.PathPrefix("/api/").Subrouter()) // Api handles
+	www.HandleFunc("/login", loginHandle)
+	www.HandleFunc("/logout", logoutHandle)
+	www.HandleFunc("/{path:.*}", root) // Anything else goes to angularjs
+
+	// Register handles for anif subdomain
+	anif := r.Host("anif." + domain).Subrouter()
+	anif.HandleFunc("/", serveHandle)
+
+	http.Handle("/", r)
 }
 
-func init() {
-	http.HandleFunc("/login", loginHandle)
-	http.HandleFunc("/logout", logoutHandle)
-	http.HandleFunc("/upload", uploadHandle)
-	http.HandleFunc("/serve", serveHandle)
-	http.HandleFunc("/", root)
+func redirect(w http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+	http.Redirect(w, r, baseUrl + vars["path"], http.StatusFound)
 }
 
 func root(w http.ResponseWriter, r *http.Request) {
@@ -49,7 +75,7 @@ func loginHandle(w http.ResponseWriter, r *http.Request) {
 	if u == nil {
 		url, err := user.LoginURL(c, "/")
 		if err != nil {
-			serveError(c, w, err)
+			common.ServeError(c, w, err)
 			return
 		}
 		w.Header().Set("Location", url)
@@ -70,7 +96,7 @@ func logoutHandle(w http.ResponseWriter, r *http.Request) {
 	if u != nil {
 		url, err := user.LogoutURL(c, "/")
 		if err != nil {
-			serveError(c, w, err)
+			common.ServeError(c, w, err)
 			return
 		}
 		w.Header().Set("Location", url)
@@ -80,25 +106,6 @@ func logoutHandle(w http.ResponseWriter, r *http.Request) {
 
 	w.Header().Set("Location", "/")
 	w.WriteHeader(http.StatusFound)
-}
-
-func uploadHandle(w http.ResponseWriter, r *http.Request) {
-	c := appengine.NewContext(r)
-
-	blobs, _, err := blobstore.ParseUpload(r)
-	if err != nil {
-		serveError(c, w, err)
-		return
-	}
-
-	file := blobs["file"]
-	if len(file) == 0 {
-		c.Errorf("no file uploaded")
-		fmt.Fprint(w, "no file uploaded")
-		return
-	}
-
-	fmt.Fprint(w, "ok")
 }
 
 func serveHandle(w http.ResponseWriter, r *http.Request) {

@@ -33,7 +33,7 @@ app.controller('DashboardCtrl', function($scope) {
 
 app.controller('VisualizationsCtrl', function($scope, $location, $http) {
 	$scope.createNew = function() {
-		$http.post('/rest/visualization').success(function(result) {
+		$http.post('/api/visualizations/').success(function(result) {
 			$location.path('/visualizations/' + result['key']);
 		});
 	}
@@ -41,7 +41,7 @@ app.controller('VisualizationsCtrl', function($scope, $location, $http) {
 
 app.controller('VisualizationCtrl', function($scope, $routeParams, $http) {
 	$scope.key = $routeParams.key;
-	$http.get('/rest/visualization?key=' + $scope.key).success(function(result) {
+	$http.get('/api/visualizations/' + $scope.key).success(function(result) {
 		$scope.data = result;
 	});
 

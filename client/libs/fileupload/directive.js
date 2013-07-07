@@ -83,7 +83,7 @@ app.directive('ngFileUpload', function() {
         // Update upload url on submit (upload url-s are not reusable)
         submit: function (e, data) {
           var $this = $(this);
-          $.getJSON('/rest/uploadurl?vkey=' + attr.ngFileUpload, function(result) {
+          $.getJSON('/api/visualizations/' + attr.ngFileUpload + '/uploadurl', function(result) {
             data.url = result;
             $this.fileupload('send', data);
           });

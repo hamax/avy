@@ -4,9 +4,7 @@ runtime: go
 api_version: go1
 
 handlers:
-- url: /favicon\.ico
-  static_files: favicon.ico
-  upload: favicon\.ico
+# www
 - url: /css
   static_dir: client/css
 - url: /img
@@ -17,5 +15,12 @@ handlers:
   static_dir: client/libs
 - url: /partials
   static_dir: client/partials
+# anif
+- url: /framework
+  static_dir: anif
+# common
+- url: /favicon\.ico
+  static_files: favicon.ico
+  upload: favicon\.ico
 - url: /.*
   script: _go_app
