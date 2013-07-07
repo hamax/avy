@@ -22,7 +22,6 @@ func getVisualization(w http.ResponseWriter, r *http.Request) {
 	c := appengine.NewContext(r)
 	vars := mux.Vars(r)
 
-	r.ParseForm()
 	key, err := datastore.DecodeKey(vars["key"])
 	if err != nil {
 		common.ServeError(c, w, err)
@@ -74,7 +73,6 @@ func uploadVisualizationFile(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Get the visualization object
-	r.ParseForm()
 	key, err := datastore.DecodeKey(vars["key"])
 	if err != nil {
 		common.ServeError(c, w, err)
@@ -106,8 +104,6 @@ func uploadVisualizationFile(w http.ResponseWriter, r *http.Request) {
 func getVisualizationFileUploadUrl(w http.ResponseWriter, r *http.Request) {
 	c := appengine.NewContext(r)
 	vars := mux.Vars(r)
-
-	r.ParseForm()
 
 	uploadUrl, err := blobstore.UploadURL(c, "/api/visualizations/" + vars["key"] + "/files", nil)
 	if err != nil {

@@ -2,12 +2,12 @@ package server
 
 import (
 	"appengine"
-	"appengine/blobstore"
 	"appengine/user"
 	"github.com/gorilla/mux"
 	"html/template"
 	"net/http"
 
+	"server/anif"
 	"server/api"
 	"server/common"
 )
@@ -46,8 +46,7 @@ func init() {
 	www.HandleFunc("/{path:.*}", root) // Anything else goes to angularjs
 
 	// Register handles for anif subdomain
-	anif := r.Host("anif." + domain).Subrouter()
-	anif.HandleFunc("/", serveHandle)
+	anif.Init(r.Host("anif." + domain).Subrouter())
 
 	http.Handle("/", r)
 }
@@ -106,8 +105,4 @@ func logoutHandle(w http.ResponseWriter, r *http.Request) {
 
 	w.Header().Set("Location", "/")
 	w.WriteHeader(http.StatusFound)
-}
-
-func serveHandle(w http.ResponseWriter, r *http.Request) {
-	blobstore.Send(w, appengine.BlobKey(r.FormValue("blobKey")))
 }
