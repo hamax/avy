@@ -44,7 +44,7 @@ func get(w http.ResponseWriter, r *http.Request) interface{} {
 func post(w http.ResponseWriter, r *http.Request) interface{} {
 	c := appengine.NewContext(r)
 
-	e := Visualization{}
+	e := Visualization{"Untitled", nil}
 
 	key, err := datastore.Put(c, datastore.NewIncompleteKey(c, "visualization", nil), &e)
 	if err != nil {
@@ -52,7 +52,7 @@ func post(w http.ResponseWriter, r *http.Request) interface{} {
 		return nil
 	}
 
-	return key
+	return map[string]*datastore.Key{"key": key}
 }
 
 // TODO: transaction, multiple files, error checking
@@ -88,7 +88,9 @@ func filePost(w http.ResponseWriter, r *http.Request) interface{} {
 	}
 
 	// Add the new file
-	e.Files = append(e.Files, file.File{"test", files[0].BlobKey})
+	for _, cfile := range files {
+		e.Files = append(e.Files, file.File{cfile.Filename, cfile.BlobKey})
+	}
 	
 	// Save the visualization object
 	key, err = datastore.Put(c, key, &e)
@@ -97,5 +99,5 @@ func filePost(w http.ResponseWriter, r *http.Request) interface{} {
 		return nil
 	}
 
-	return nil
+	return e
 }

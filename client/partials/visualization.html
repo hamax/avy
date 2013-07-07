@@ -1,0 +1,20 @@
+<tabset>
+	<tab heading="Code">
+		<div class="row-fluid">
+			<div class="span8">
+				Title: {{data.Title}}<br/>
+				Files:<br/>
+				<ul>
+					<li ng-repeat="file in data.Files">{{file.Filename}} {{file.BlobKey}}</li>
+				</ul>
+			</div>
+			<div class="span4 well">
+				<h2>Files</h2>
+				<div ng-file-upload="{{key}}" complete="uploadComplete(data)" error="uploadError()"></div>
+			</div>
+		</div>
+	</tab>
+	<tab heading="Preview">
+		Preview
+	</tab>
+</tabset>

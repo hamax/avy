@@ -65,12 +65,12 @@ app.directive('ngFileUpload', function() {
             tpl.find('input').knob();
 
             // Listen for clicks on the cancel icon
-            tpl.find('span').click(function(){
-              if(tpl.hasClass('working')){
+            tpl.find('span').click(function() {
+              if(tpl.hasClass('working')) {
                 jqXHR.abort();
               }
 
-              tpl.fadeOut(function(){
+              tpl.fadeOut(function() {
                 tpl.remove();
               });
             });
@@ -83,7 +83,7 @@ app.directive('ngFileUpload', function() {
         // Update upload url on submit (upload url-s are not reusable)
         submit: function (e, data) {
           var $this = $(this);
-          $.getJSON('/rest/uploadurl', function(result) {
+          $.getJSON('/rest/uploadurl?vkey=' + attr.ngFileUpload, function(result) {
             data.url = result;
             $this.fileupload('send', data);
           });
@@ -92,6 +92,7 @@ app.directive('ngFileUpload', function() {
 
         done: function(e, data) {
           scope.$apply(function(s) {
+            s.data = data.response().result;
             s.$eval(attr.complete);
           });
         },

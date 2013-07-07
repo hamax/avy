@@ -2,11 +2,12 @@ var app = angular.module('avy', ['ui.bootstrap']);
 
 app.config(function($routeProvider, $locationProvider) {
 	$routeProvider
-		.when('/', {templateUrl: 'partials/homepage.html', controller: 'HomepageCtrl'})
-		.when('/dashboard', {templateUrl: 'partials/dashboard.html', controller: 'DashboardCtrl'})
-		.when('/visualizations', {templateUrl: 'partials/visualizations.html', controller: 'VisualizationsCtrl'})
-		.when('/modules', {templateUrl: 'partials/modules.html', controller: 'ModulesCtrl'})
-		.when('/about', {templateUrl: 'partials/about.html', controller: 'AboutCtrl'})
+		.when('/', {templateUrl: '/partials/homepage.html', controller: 'HomepageCtrl'})
+		.when('/dashboard', {templateUrl: '/partials/dashboard.html', controller: 'DashboardCtrl'})
+		.when('/visualizations', {templateUrl: '/partials/visualizations.html', controller: 'VisualizationsCtrl'})
+		.when('/visualizations/:key', {templateUrl: '/partials/visualization.html', controller: 'VisualizationCtrl'})
+		.when('/modules', {templateUrl: '/partials/modules.html', controller: 'ModulesCtrl'})
+		.when('/about', {templateUrl: '/partials/about.html', controller: 'AboutCtrl'})
 		.when('/login', {redirectTo: function() { window.location = '/login'; }})
 		.when('/logout', {redirectTo: function() { window.location = '/logout'; }})
 		.otherwise({redirectTo: '/'});
@@ -27,17 +28,30 @@ app.controller('HomepageCtrl', function($scope) {
 });
 
 app.controller('DashboardCtrl', function($scope) {
-	$scope.uploadComplete = function() {
-		
+
+});
+
+app.controller('VisualizationsCtrl', function($scope, $location, $http) {
+	$scope.createNew = function() {
+		$http.post('/rest/visualization').success(function(result) {
+			$location.path('/visualizations/' + result['key']);
+		});
+	}
+});
+
+app.controller('VisualizationCtrl', function($scope, $routeParams, $http) {
+	$scope.key = $routeParams.key;
+	$http.get('/rest/visualization?key=' + $scope.key).success(function(result) {
+		$scope.data = result;
+	});
+
+	$scope.uploadComplete = function(a) {
+
 	};
 
 	$scope.uploadError = function() {
-		alert('error');
+
 	};
-});
-
-app.controller('VisualizationsCtrl', function($scope) {
-
 });
 
 app.controller('ModulesCtrl', function($scope) {

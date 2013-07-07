@@ -17,10 +17,14 @@ func init() {
 	http.HandleFunc("/rest/uploadurl", storage.CreateHandler(get, nil, nil, nil))
 }
 
+// TODO: validate parameters
 func get(w http.ResponseWriter, r *http.Request) interface{} {
 	c := appengine.NewContext(r)
 
-	uploadUrl, err := blobstore.UploadURL(c, "/upload", nil)
+	r.ParseForm()
+	url := "/rest/visualization/file?key=" + r.Form["vkey"][0]
+
+	uploadUrl, err := blobstore.UploadURL(c, url, nil)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return nil
