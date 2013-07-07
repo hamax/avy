@@ -54,7 +54,7 @@ func newVisualization(w http.ResponseWriter, r *http.Request) {
 	common.WriteJson(c, w, map[string]*datastore.Key{"key": key})
 }
 
-// TODO: transaction, multiple files, error checking
+// TODO: delte file from blobstore if not needed anymore
 func uploadVisualizationFile(w http.ResponseWriter, r *http.Request) {
 	c := appengine.NewContext(r)
 	vars := mux.Vars(r)
@@ -72,27 +72,46 @@ func uploadVisualizationFile(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// Get the visualization object
 	key, err := datastore.DecodeKey(vars["key"])
 	if err != nil {
 		common.ServeError(c, w, err)
 		return
 	}
 
+	// Start a datastore transaction
 	var e model.Visualization
-	err = datastore.Get(c, key, &e)
-	if err != nil {
-		common.ServeError(c, w, err)
-		return
-	}
+	err = datastore.RunInTransaction(c, func(c appengine.Context) error {
+		// Get the visualization object
+		err = datastore.Get(c, key, &e)
+		if err != nil {
+			return err
+		}
 
-	// Add the new file
-	for i := range files {
-		e.Files = append(e.Files, model.File{files[i].Filename, files[i].BlobKey})
-	}
-	
-	// Save the visualization object
-	key, err = datastore.Put(c, key, &e)
+		// Add the new file
+		for i := range files {
+			nfile := model.File{files[i].Filename, files[i].BlobKey}
+
+			// Check if it already exists
+			exists := false
+			for j := range e.Files {
+				if e.Files[j].Filename == nfile.Filename {
+					// Overwrite
+					// TODO: delete old file
+					e.Files[j] = nfile
+					exists = true
+					break
+				}
+			}
+
+			if !exists {
+				e.Files = append(e.Files, nfile)
+			}
+		}
+		
+		// Save the visualization object
+		key, err = datastore.Put(c, key, &e)
+		return err
+	}, nil)
 	if err != nil {
 		common.ServeError(c, w, err)
 		return

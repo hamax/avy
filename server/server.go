@@ -15,7 +15,7 @@ import (
 // dev
 const (
 	domain = "avy"
-	baseUrl = "http://www.avy/"
+	baseUrl = "http://www.avy:8080/"
 )
 
 // prod
