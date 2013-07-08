@@ -92,7 +92,7 @@ app.directive('ngFileUpload', function() {
 
         done: function(e, data) {
           scope.$apply(function(s) {
-            s.data = data.response().result;
+            s.update(data.response().result);
             s.$eval(attr.complete);
           });
         },

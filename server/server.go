@@ -15,14 +15,14 @@ import (
 // dev
 const (
 	domain = "avy"
-	baseUrl = "http://www.avy:8080/"
+	port = ":8080"
 )
 
 // prod
 /*
 const (
 	domain = "avy-project.appspot.com"
-	baseUrl = "http://www.avy-project.appspot.com/"
+	port = ""
 )
 */
 
@@ -30,6 +30,8 @@ var templates = template.Must(template.ParseGlob("client/index.html"))
 
 type IndexData struct {
 	User *user.User
+	Domain string
+	Port string
 }
 
 func init() {
@@ -53,7 +55,7 @@ func init() {
 
 func redirect(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
-	http.Redirect(w, r, baseUrl + vars["path"], http.StatusFound)
+	http.Redirect(w, r, "http://www." + domain + port + "/" + vars["path"], http.StatusFound)
 }
 
 func root(w http.ResponseWriter, r *http.Request) {
@@ -62,7 +64,7 @@ func root(w http.ResponseWriter, r *http.Request) {
 	// Get current user
 	u := user.Current(c)
 
-	templates.ExecuteTemplate(w, "index", IndexData{u})
+	templates.ExecuteTemplate(w, "index", IndexData{u, domain, port})
 }
 
 func loginHandle(w http.ResponseWriter, r *http.Request) {
