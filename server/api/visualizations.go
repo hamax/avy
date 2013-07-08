@@ -23,7 +23,7 @@ func visualizationsInit(s *mux.Router) {
 func listVisualizations(w http.ResponseWriter, r *http.Request) {
 	c := appengine.NewContext(r)
 
-	q := datastore.NewQuery("visualization");
+	q := datastore.NewQuery("visualization").Order("-Date");
 
 	// Get visualizations
 	var e []model.Visualization
@@ -44,8 +44,6 @@ func listVisualizations(w http.ResponseWriter, r *http.Request) {
 
 func newVisualization(w http.ResponseWriter, r *http.Request) {
 	c := appengine.NewContext(r)
-
-	print("hello")
 
 	e := model.Visualization{"Untitled", time.Now(), nil}
 
