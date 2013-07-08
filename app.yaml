@@ -17,7 +17,7 @@ handlers:
   static_dir: client/partials
 # anif
 - url: /framework
-  static_dir: anif
+  static_dir: anif/framework
 # common
 - url: /favicon\.ico
   static_files: favicon.ico

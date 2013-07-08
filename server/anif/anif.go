@@ -5,14 +5,22 @@ import (
 	"appengine/blobstore"
 	"appengine/datastore"
 	"github.com/gorilla/mux"
+	"html/template"
 	"net/http"
 
 	"server/common"
 	"server/model"
 )
 
+var templates = template.Must(template.ParseGlob("anif/index.html"))
+
 func Init(s *mux.Router) {
+	s.HandleFunc("/visualizations/{key}/", getVisualizationIndex).Methods("GET")
 	s.HandleFunc("/visualizations/{key}/{filename}", getVisualizationFile).Methods("GET")
+}
+
+func getVisualizationIndex(w http.ResponseWriter, r *http.Request) {
+	templates.ExecuteTemplate(w, "index", nil)
 }
 
 func getVisualizationFile(w http.ResponseWriter, r *http.Request) {

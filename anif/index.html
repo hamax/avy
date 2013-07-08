@@ -1,0 +1,29 @@
+{{define "index"}}
+<!DOCTYPE html>
+<html>
+	<head>
+		<title>Anif</title>
+		<style>
+			html, body {
+				padding: 0;
+				margin: 0;
+			}
+		</style>
+		<script data-main="main" src="/framework/libs/require.js"></script>
+		<script>
+			requirejs.config({
+				shim: {
+					'd3': {
+						exports: 'd3'
+					}
+				},
+				paths: {
+					'd3': '/framework/libs/d3.v3'
+				}
+			});
+		</script>
+	</head>
+	<body>
+	</body>
+</html>
+{{end}}
