@@ -6,16 +6,56 @@ import (
 	"appengine/datastore"
 	"github.com/gorilla/mux"
 	"net/http"
+	"time"
 
 	"server/common"
 	"server/model"
 )
 
 func visualizationsInit(s *mux.Router) {
-	s.HandleFunc("/{key}", getVisualization).Methods("GET")
+	s.HandleFunc("/", listVisualizations).Methods("GET")
 	s.HandleFunc("/", newVisualization).Methods("POST")
+	s.HandleFunc("/{key}", getVisualization).Methods("GET")
 	s.HandleFunc("/{key}/uploadurl", getVisualizationFileUploadUrl).Methods("GET")
 	s.HandleFunc("/{key}/files", uploadVisualizationFile).Methods("POST")
+}
+
+func listVisualizations(w http.ResponseWriter, r *http.Request) {
+	c := appengine.NewContext(r)
+
+	q := datastore.NewQuery("visualization");
+
+	// Get visualizations
+	var e []model.Visualization
+	keys, err := q.GetAll(c, &e)
+	if err != nil {
+		common.ServeError(c, w, err)
+		return
+	}
+
+	// Prepare output
+	var output []map[string]interface{}
+	for i := range keys {
+		output = append(output, map[string]interface{}{"Key": keys[i], "Title": e[i].Title, "Date": e[i].Date})
+	}
+
+	common.WriteJson(c, w, output)
+}
+
+func newVisualization(w http.ResponseWriter, r *http.Request) {
+	c := appengine.NewContext(r)
+
+	print("hello")
+
+	e := model.Visualization{"Untitled", time.Now(), nil}
+
+	key, err := datastore.Put(c, datastore.NewIncompleteKey(c, "visualization", nil), &e)
+	if err != nil {
+		common.ServeError(c, w, err)
+		return
+	}
+
+	common.WriteJson(c, w, map[string]*datastore.Key{"key": key})
 }
 
 func getVisualization(w http.ResponseWriter, r *http.Request) {
@@ -38,20 +78,17 @@ func getVisualization(w http.ResponseWriter, r *http.Request) {
 	common.WriteJson(c, w, e)
 }
 
-func newVisualization(w http.ResponseWriter, r *http.Request) {
+func getVisualizationFileUploadUrl(w http.ResponseWriter, r *http.Request) {
 	c := appengine.NewContext(r)
+	vars := mux.Vars(r)
 
-	print("hello")
-
-	e := model.Visualization{"Untitled", nil}
-
-	key, err := datastore.Put(c, datastore.NewIncompleteKey(c, "visualization", nil), &e)
+	uploadUrl, err := blobstore.UploadURL(c, "/api/visualizations/" + vars["key"] + "/files", nil)
 	if err != nil {
 		common.ServeError(c, w, err)
 		return
 	}
 
-	common.WriteJson(c, w, map[string]*datastore.Key{"key": key})
+	common.WriteJson(c, w, uploadUrl.Path)
 }
 
 // TODO: delte file from blobstore if not needed anymore
@@ -118,17 +155,4 @@ func uploadVisualizationFile(w http.ResponseWriter, r *http.Request) {
 	}
 
 	common.WriteJson(c, w, e)
-}
-
-func getVisualizationFileUploadUrl(w http.ResponseWriter, r *http.Request) {
-	c := appengine.NewContext(r)
-	vars := mux.Vars(r)
-
-	uploadUrl, err := blobstore.UploadURL(c, "/api/visualizations/" + vars["key"] + "/files", nil)
-	if err != nil {
-		common.ServeError(c, w, err)
-		return
-	}
-
-	common.WriteJson(c, w, uploadUrl.Path)
 }

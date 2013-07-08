@@ -17,9 +17,32 @@ app.config(function($routeProvider, $locationProvider) {
 		.hashPrefix('!');
 });
 
+app.service('api', function($http) {
+	this.listVisualizations = function(callback) {
+		$http.get('/api/visualizations/').success(function(result) {
+			for (var i = 0; i < result.length; i++) {
+				result[i].Date = Date.parse(result[i].Date);
+			}
+			callback(result);
+		});
+	}
+
+	this.newVisualization = function(callback) {
+		$http.post('/api/visualizations/').success(function(result) {
+			callback(result['key']);
+		});
+	}
+
+	this.getVisualization = function(key, callback) {
+		$http.get('/api/visualizations/' + key).success(function(result) {
+			callback(result);
+		});
+	}
+});
+
 app.controller('RootCtrl', function($scope, $location) {
 	$scope.isActive = function(route) {
-		return route === $location.path();
+		return $location.path().indexOf(route) == 0;
 	};
 });
 
@@ -31,17 +54,25 @@ app.controller('DashboardCtrl', function($scope) {
 
 });
 
-app.controller('VisualizationsCtrl', function($scope, $location, $http) {
+app.controller('VisualizationsCtrl', function($scope, $location, api) {
+	api.listVisualizations(function(result) {
+		$scope.visualizations = result;
+	});
+
+	$scope.click = function(key) {
+		$location.path('/visualizations/' + key);
+	};
+
 	$scope.createNew = function() {
-		$http.post('/api/visualizations/').success(function(result) {
-			$location.path('/visualizations/' + result['key']);
+		api.newVisualization(function(key) {
+			$location.path('/visualizations/' + key);
 		});
-	}
+	};
 });
 
-app.controller('VisualizationCtrl', function($scope, $routeParams, $http) {
+app.controller('VisualizationCtrl', function($scope, $routeParams, api) {
 	$scope.key = $routeParams.key;
-	$http.get('/api/visualizations/' + $scope.key).success(function(result) {
+	api.getVisualization($routeParams.key, function(result) {
 		$scope.data = result;
 	});
 

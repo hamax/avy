@@ -2,6 +2,7 @@ package model
 
 import (
 	"appengine"
+	"time"
 )
 
 type File struct {
@@ -11,5 +12,6 @@ type File struct {
 
 type Visualization struct {
 	Title string
+	Date time.Time
 	Files []File
 }

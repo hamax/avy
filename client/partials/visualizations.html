@@ -1,1 +1,8 @@
+<div class="tlist">
+	<div class="item well" ng-repeat="visualization in visualizations" ng-click="click(visualization.Key)">
+		<div class="pull-right">{{visualization.Date|date}}</div>
+		<b>{{visualization.Title}}</b>
+	</div>
+</div>
+<br style="clear: both" />
 <a ng-click="createNew()" class="btn btn-primary">New</a>
