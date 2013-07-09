@@ -34,7 +34,7 @@ func listVisualizations(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Prepare output
-	var output []map[string]interface{}
+	output := make([]map[string]interface{}, 0)
 	for i := range keys {
 		output = append(output, map[string]interface{}{"Key": keys[i], "Title": e[i].Title, "Date": e[i].Date})
 	}
