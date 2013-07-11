@@ -18,6 +18,9 @@ app.config(function($routeProvider, $locationProvider) {
 });
 
 app.service('api', function($http) {
+	$http.defaults.headers.post["Content-Type"] = 'application/x-www-form-urlencoded';
+
+
 	this.listVisualizations = function(callback) {
 		$http.get('/api/visualizations/').success(function(result) {
 			for (var i = 0; i < result.length; i++) {
@@ -37,6 +40,10 @@ app.service('api', function($http) {
 		$http.get('/api/visualizations/' + key).success(function(result) {
 			callback(result);
 		});
+	}
+
+	this.setVisualizationTitle = function(key, title) {
+		$http.post('/api/visualizations/' + key + '/title', $.param({'title': title}));
 	}
 });
 
@@ -73,6 +80,34 @@ app.service('fileApi', function() {
 		messages[msg.content.id] = msg;
 		if (ready) {
 			send(msg);
+		}
+	};
+});
+
+app.directive('contenteditable', function() {
+	return {
+		require: 'ngModel',
+		link: function(scope, elm, attrs, ctrl) {
+			elm.bind('keydown', function(e) {
+				if (e.keyCode == 13) {
+					elm.blur();
+				}
+			});
+
+			// view -> model
+			elm.bind('blur', function(e) {
+				scope.$apply(function(s) {
+					if (elm.html() !== ctrl.$viewValue) {
+						ctrl.$setViewValue(elm.html());
+						s.$eval(attrs.change);
+					}
+				});
+			});
+
+			// model -> view
+			ctrl.$render = function() {
+				elm.html(ctrl.$viewValue);
+			};
 		}
 	};
 });
@@ -183,6 +218,10 @@ app.controller('VisualizationCtrl', function($scope, $routeParams, api, fileApi)
 				$scope.editor = content;
 			});
 		});
+	};
+
+	$scope.saveTitle = function() {
+		api.setVisualizationTitle($scope.key, $scope.data.Title);
 	};
 });
 

@@ -16,6 +16,7 @@ func visualizationsInit(s *mux.Router) {
 	s.HandleFunc("/", listVisualizations).Methods("GET")
 	s.HandleFunc("/", newVisualization).Methods("POST")
 	s.HandleFunc("/{key}", getVisualization).Methods("GET")
+	s.HandleFunc("/{key}/title", setVisualizationTitle).Methods("POST")
 	s.HandleFunc("/{key}/uploadurl", getVisualizationFileUploadUrl).Methods("GET")
 	s.HandleFunc("/{key}/files", uploadVisualizationFile).Methods("POST")
 }
@@ -74,6 +75,40 @@ func getVisualization(w http.ResponseWriter, r *http.Request) {
 	}
 
 	common.WriteJson(c, w, e)
+}
+
+func setVisualizationTitle(w http.ResponseWriter, r *http.Request) {
+	c := appengine.NewContext(r)
+	vars := mux.Vars(r)
+
+	title := r.PostFormValue("title")
+
+	key, err := datastore.DecodeKey(vars["key"])
+	if err != nil {
+		common.ServeError(c, w, err)
+		return
+	}
+
+	// Start a datastore transaction
+	var e model.Visualization
+	err = datastore.RunInTransaction(c, func(c appengine.Context) error {
+		// Get the visualization object
+		err = datastore.Get(c, key, &e)
+		if err != nil {
+			return err
+		}
+
+		// Change the title
+		e.Title = title
+		
+		// Save the visualization object
+		key, err = datastore.Put(c, key, &e)
+		return err
+	}, nil)
+	if err != nil {
+		common.ServeError(c, w, err)
+		return
+	}
 }
 
 func getVisualizationFileUploadUrl(w http.ResponseWriter, r *http.Request) {
