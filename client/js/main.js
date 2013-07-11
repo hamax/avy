@@ -1,4 +1,4 @@
-var app = angular.module('avy', ['ui.bootstrap']);
+var app = angular.module('avy', ['ui.bootstrap', 'ui.codemirror']);
 
 app.config(function($routeProvider, $locationProvider) {
 	$routeProvider
@@ -109,19 +109,51 @@ app.controller('VisualizationsCtrl', function($scope, $location, api) {
 
 app.controller('VisualizationCtrl', function($scope, $routeParams, api, fileApi) {
 	$scope.key = $routeParams.key;
-	$scope.files = {};
 	api.getVisualization($scope.key, function(result) {
 		$scope.update(result);
+		$scope.selectFirstFile();
 	});
+
+	$scope.editorOptions = {
+		lineNumbers: true,
+		lineWrapping: true,
+		tabSize: 4,
+		indentUnit: 4,
+		indentWithTabs: true,
+		readOnly: 'nocursor'
+	};
+
+	var ext2grp = {
+		'js': 1,
+		'avy': 2
+	}, ext2mode = {
+		'js': 'text/javascript',
+		'c': 'text/x-csrc',
+		'cpp': 'text/x-c++src',
+		'java': 'text/x-java',
+		'py': 'text/x-python',
+		'avy': 'text/javascript'
+	};
 
 	$scope.update = function(data) {
 		$scope.data = data;
+
+		$scope.files = [[], [], []];
 		for (var i = 0; i < data.Files.length; i++) {
-			fileApi.getVisualizationFile($scope.key, data.Files[i].Filename, function(i, content) {
-				$scope.$apply(function() {
-					$scope.files[data.Files[i].Filename] = content;
-				});
-			}.bind(this, i));
+			var ext = data.Files[i].Filename.split('.').pop();
+			data.Files[i].ext = ext;
+			$scope.files[ext2grp[ext] || 0].push(data.Files[i]);
+		}
+		for (var i = 0; i < $scope.files.length; i++) {
+			$scope.files[i].sort(function(a, b) {
+				if (a.Filename > b.Filename) {
+					return 1;
+				}
+				if (a.Filename < b.Filename) {
+					return -1;
+				}
+				return 0;
+			});
 		}
 	};
 
@@ -131,6 +163,26 @@ app.controller('VisualizationCtrl', function($scope, $routeParams, api, fileApi)
 
 	$scope.uploadError = function() {
 
+	};
+
+	$scope.selectFirstFile = function() {
+		for (var i = 0; i < $scope.files.length; i++) {
+			if ($scope.files[i].length) {
+				$scope.selectFile($scope.files[i][0]);
+				return;
+			}
+		}
+	}
+
+	$scope.selectFile = function(file) {
+		$scope.activeFile = file.Filename;
+		$scope.editor = '';
+		$scope.editorMode = ext2mode[file.ext];
+		fileApi.getVisualizationFile($scope.key, file.Filename, function(content) {
+			$scope.$apply(function() {
+				$scope.editor = content;
+			});
+		});
 	};
 });
 
