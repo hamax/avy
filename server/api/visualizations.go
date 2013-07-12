@@ -2,6 +2,7 @@ package api
 
 import (
 	"appengine"
+	"appengine/user"
 	"appengine/blobstore"
 	"appengine/datastore"
 	"github.com/gorilla/mux"
@@ -26,6 +27,17 @@ func listVisualizations(w http.ResponseWriter, r *http.Request) {
 
 	q := datastore.NewQuery("visualization").Order("-Date");
 
+	// Parse filter parameters
+	r.ParseForm()
+	fUser := r.Form["user"]
+	if len(fUser) > 0 && fUser[0] == "me" {
+		u := user.Current(c)
+		if u == nil {
+			// TODO: access denied
+		}
+		q = q.Ancestor(common.GetAccountKey(c, u))
+	}
+
 	// Get visualizations
 	var e []model.Visualization
 	keys, err := q.GetAll(c, &e)
@@ -45,10 +57,11 @@ func listVisualizations(w http.ResponseWriter, r *http.Request) {
 
 func newVisualization(w http.ResponseWriter, r *http.Request) {
 	c := appengine.NewContext(r)
+	u := user.Current(c)
 
 	e := model.Visualization{"Untitled", time.Now(), nil}
 
-	key, err := datastore.Put(c, datastore.NewIncompleteKey(c, "visualization", nil), &e)
+	key, err := datastore.Put(c, datastore.NewIncompleteKey(c, "visualization", common.GetAccountKey(c, u)), &e)
 	if err != nil {
 		common.ServeError(c, w, err)
 		return

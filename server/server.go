@@ -10,6 +10,7 @@ import (
 	"server/anif"
 	"server/api"
 	"server/common"
+	"server/model"
 )
 
 // dev
@@ -30,6 +31,7 @@ var templates = template.Must(template.ParseGlob("client/index.html"))
 
 type IndexData struct {
 	User *user.User
+	Accout *model.Account
 	Domain string
 	Port string
 }
@@ -60,11 +62,16 @@ func redirect(w http.ResponseWriter, r *http.Request) {
 
 func root(w http.ResponseWriter, r *http.Request) {
 	c := appengine.NewContext(r)
-	
-	// Get current user
-	u := user.Current(c)
 
-	templates.ExecuteTemplate(w, "index", IndexData{u, domain, port})
+	// Get user and account
+	u := user.Current(c)
+	acc, err := common.GetAccount(c, u)
+	if err != nil {
+		common.ServeError(c, w, err)
+		return
+	}
+
+	templates.ExecuteTemplate(w, "index", IndexData{u, acc, domain, port})
 }
 
 func loginHandle(w http.ResponseWriter, r *http.Request) {
