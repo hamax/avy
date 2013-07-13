@@ -1,18 +1,20 @@
-<h1>{{data.Name}}</h1>
-<tabset>
-	<tab heading="Code">
-		<div class="row-fluid" ng-controller="CodeEditorCtrl">
-			<div class="span8">
-				<textarea ui-codemirror="editorOptions" ng-model="editor" mode="editorMode"></textarea>
+<div class="container-fluid">
+	<h1>{{data.Name}}</h1>
+	<tabset>
+		<tab heading="Code">
+			<div class="row-fluid" ng-controller="CodeEditorCtrl">
+				<div class="span8">
+					<textarea ui-codemirror="editorOptions" ng-model="editor" mode="editorMode"></textarea>
+				</div>
+				<div class="span4 well">
+					<h2>Files</h2>
+					<ul ng-repeat="fileGrp in files" class="nav nav-pills nav-stacked">
+						<li ng-repeat="file in fileGrp" ng-click="selectFile(file)" ng-class="{'active': activeFile == file.Filename}"><a href="#">{{file.Filename}}</a></li>
+					</ul>
+					<h3>Upload</h3>
+					<div ng-file-upload="{{key}}" complete="uploadComplete(data)" error="uploadError()"></div>
+				</div>
 			</div>
-			<div class="span4 well">
-				<h2>Files</h2>
-				<ul ng-repeat="fileGrp in files" class="nav nav-pills nav-stacked">
-					<li ng-repeat="file in fileGrp" ng-click="selectFile(file)" ng-class="{'active': activeFile == file.Filename}"><a href="#">{{file.Filename}}</a></li>
-				</ul>
-				<h3>Upload</h3>
-				<div ng-file-upload="{{key}}" complete="uploadComplete(data)" error="uploadError()"></div>
-			</div>
-		</div>
-	</tab>
-</tabset>
+		</tab>
+	</tabset>
+</div>

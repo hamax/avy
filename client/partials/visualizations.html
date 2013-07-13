@@ -1,6 +1,8 @@
-<div class="tlist">
-	<div class="item well" ng-repeat="visualization in visualizations" ng-click="click(visualization.Key)">
-		<div class="pull-right">{{visualization.Date|date}}</div>
-		<b>{{visualization.Title}}</b>
+<div class="container-fluid">
+	<div class="tlist">
+		<div class="item well" ng-repeat="visualization in visualizations" ng-click="click(visualization.Key)">
+			<div class="pull-right">{{visualization.Date|date}}</div>
+			<b>{{visualization.Title}}</b>
+		</div>
 	</div>
 </div>

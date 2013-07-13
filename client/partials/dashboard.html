@@ -1,21 +1,23 @@
-<h1>My visualizations</h1>
-<div class="tlist">
-	<div class="item well" ng-repeat="visualization in visualizations" ng-click="clickVisualization(visualization.Key)">
-		<div class="pull-right">{{visualization.Date|date}}</div>
-		<b>{{visualization.Title}}</b>
+<div class="container-fluid">
+	<h1>My visualizations</h1>
+	<div class="tlist">
+		<div class="item well" ng-repeat="visualization in visualizations" ng-click="clickVisualization(visualization.Key)">
+			<div class="pull-right">{{visualization.Date|date}}</div>
+			<b>{{visualization.Title}}</b>
+		</div>
 	</div>
-</div>
-<br style="clear: both" />
-<a ng-click="newVisualization()" class="btn btn-primary">New</a>
+	<br style="clear: both" />
+	<a ng-click="newVisualization()" class="btn btn-primary">New</a>
 
-<hr/>
+	<hr/>
 
-<h1>My modules</h1>
-<div class="tlist">
-	<div class="item well" ng-repeat="module in modules" ng-click="clickModule(module)">
-		<div class="pull-right">{{module.Date|date}}</div>
-		<b>{{module.Devname}}/{{module.Name}}</b>
+	<h1>My modules</h1>
+	<div class="tlist">
+		<div class="item well" ng-repeat="module in modules" ng-click="clickModule(module)">
+			<div class="pull-right">{{module.Date|date}}</div>
+			<b>{{module.Devname}}/{{module.Name}}</b>
+		</div>
 	</div>
+	<br style="clear: both" />
+	<a ng-click="newModule()" class="btn btn-primary">New</a>
 </div>
-<br style="clear: both" />
-<a ng-click="newModule()" class="btn btn-primary">New</a>

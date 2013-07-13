@@ -23,7 +23,3 @@ app.controller('RootCtrl', function($scope, $location) {
 		return $location.path().indexOf(route) == 0;
 	};
 });
-
-app.controller('HomepageCtrl', function($scope) {
-
-});
