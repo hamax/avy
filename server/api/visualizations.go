@@ -16,7 +16,7 @@ import (
 func visualizationsInit(s *mux.Router) {
 	s.HandleFunc("/", listVisualizations).Methods("GET")
 	s.HandleFunc("/", newVisualization).Methods("POST")
-	s.HandleFunc("/{key}", getVisualization).Methods("GET")
+	s.HandleFunc("/{key}/", getVisualization).Methods("GET")
 	s.HandleFunc("/{key}/title", setVisualizationTitle).Methods("POST")
 	s.HandleFunc("/{key}/uploadurl", getVisualizationFileUploadUrl).Methods("GET")
 	s.HandleFunc("/{key}/files", uploadVisualizationFile).Methods("POST")

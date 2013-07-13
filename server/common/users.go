@@ -29,3 +29,8 @@ func GetAccount(c appengine.Context, u *user.User) (*model.Account, error) {
 	
 	return acc, err
 }
+
+func SaveAccount(c appengine.Context, u *user.User, acc *model.Account) error {
+	_, err := datastore.Put(c, GetAccountKey(c, u), acc)
+	return err
+}

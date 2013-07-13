@@ -4,9 +4,11 @@ app.config(function($routeProvider, $locationProvider) {
 	$routeProvider
 		.when('/', {templateUrl: '/partials/homepage.html', controller: 'HomepageCtrl'})
 		.when('/dashboard', {templateUrl: '/partials/dashboard.html', controller: 'DashboardCtrl'})
-		.when('/visualizations', {templateUrl: '/partials/visualizations.html', controller: 'VisualizationsCtrl'})
-		.when('/visualizations/:key', {templateUrl: '/partials/visualization.html', controller: 'VisualizationCtrl'})
-		.when('/modules', {templateUrl: '/partials/modules.html', controller: 'ModulesCtrl'})
+		.when('/visualizations/', {templateUrl: '/partials/visualizations.html', controller: 'VisualizationsCtrl'})
+		.when('/visualizations/:key/', {templateUrl: '/partials/visualization.html', controller: 'VisualizationCtrl'})
+		.when('/modules/', {templateUrl: '/partials/modules.html', controller: 'ModulesCtrl'})
+		.when('/modules/new', {templateUrl: '/partials/newModule.html', controller: 'NewModuleCtrl'})
+		.when('/modules/:devname/:name', {templateUrl: '/partials/module.html', controller: 'ModuleCtrl'})
 		.when('/about', {templateUrl: '/partials/about.html', controller: 'AboutCtrl'})
 		.when('/login', {redirectTo: function() { window.location = '/login'; }})
 		.when('/logout', {redirectTo: function() { window.location = '/logout'; }})
@@ -20,6 +22,9 @@ app.config(function($routeProvider, $locationProvider) {
 app.service('api', function($http) {
 	$http.defaults.headers.post["Content-Type"] = 'application/x-www-form-urlencoded';
 
+	/*
+	 * Visualizations
+	 */
 
 	this.listVisualizations = function(callback) {
 		$http.get('/api/visualizations/').success(function(result) {
@@ -37,13 +42,38 @@ app.service('api', function($http) {
 	}
 
 	this.getVisualization = function(key, callback) {
-		$http.get('/api/visualizations/' + key).success(function(result) {
+		$http.get('/api/visualizations/' + key + '/').success(function(result) {
 			callback(result);
 		});
 	}
 
 	this.setVisualizationTitle = function(key, title) {
 		$http.post('/api/visualizations/' + key + '/title', $.param({'title': title}));
+	}
+
+	/*
+	 * Modules
+	 */
+
+	this.listModules = function(callback) {
+		$http.get('/api/modules/').success(function(result) {
+			for (var i = 0; i < result.length; i++) {
+				result[i].Date = Date.parse(result[i].Date);
+			}
+			callback(result);
+		});
+	}
+
+	this.newModule = function(module, callback) {
+		$http.post('/api/modules/', $.param(module)).success(function(result) {
+			callback(result);
+		});
+	}
+
+	this.getModule = function(devname, name, callback) {
+		$http.get('/api/modules/' + devname + '/' + name + '/').success(function(result) {
+			callback(result);
+		});
 	}
 });
 
@@ -132,12 +162,12 @@ app.controller('VisualizationsCtrl', function($scope, $location, api) {
 	});
 
 	$scope.click = function(key) {
-		$location.path('/visualizations/' + key);
+		$location.path('/visualizations/' + key + '/');
 	};
 
 	$scope.createNew = function() {
 		api.newVisualization(function(key) {
-			$location.path('/visualizations/' + key);
+			$location.path('/visualizations/' + key + '/');
 		});
 	};
 });
@@ -146,35 +176,26 @@ app.controller('VisualizationCtrl', function($scope, $routeParams, api, fileApi)
 	$scope.key = $routeParams.key;
 	api.getVisualization($scope.key, function(result) {
 		$scope.update(result);
-		$scope.selectFirstFile();
 	});
 
-	$scope.editorOptions = {
-		lineNumbers: true,
-		lineWrapping: true,
-		tabSize: 4,
-		indentUnit: 4,
-		indentWithTabs: true,
-		readOnly: 'nocursor'
+	$scope.saveTitle = function() {
+		api.setVisualizationTitle($scope.key, $scope.data.Title);
 	};
+
+	/*
+	 * Code tab
+	 */
 
 	var ext2grp = {
 		'js': 1,
 		'avy': 2
-	}, ext2mode = {
-		'js': 'text/javascript',
-		'c': 'text/x-csrc',
-		'cpp': 'text/x-c++src',
-		'java': 'text/x-java',
-		'py': 'text/x-python',
-		'avy': 'text/javascript'
 	};
 
 	$scope.update = function(data) {
 		$scope.data = data;
 
 		$scope.files = [[], [], []];
-		for (var i = 0; i < data.Files.length; i++) {
+		for (var i = 0; data.Files && i < data.Files.length; i++) {
 			var ext = data.Files[i].Filename.split('.').pop();
 			data.Files[i].ext = ext;
 			$scope.files[ext2grp[ext] || 0].push(data.Files[i]);
@@ -191,23 +212,89 @@ app.controller('VisualizationCtrl', function($scope, $routeParams, api, fileApi)
 			});
 		}
 	};
+});
 
-	$scope.uploadComplete = function(a) {
+app.controller('ModulesCtrl', function($scope, $location, api) {
+	api.listModules(function(result) {
+		$scope.modules = result;
+	});
 
+	$scope.click = function(module) {
+		$location.path('/modules/' + module.Devname + '/' + module.Name + '/');
 	};
 
-	$scope.uploadError = function() {
-
+	$scope.createNew = function() {
+		$location.path('/modules/new');
 	};
+});
 
-	$scope.selectFirstFile = function() {
+app.controller('NewModuleCtrl', function($scope, $location, api) {
+	$scope.create = function() {
+		api.newModule($scope.module, function(response) {
+			$location.path('/modules/' + response.Devname + '/' + response.Name + '/');
+		});
+	};
+});
+
+
+app.controller('ModuleCtrl', function($scope, $routeParams, api, fileApi) {
+	$scope.devname = $routeParams.devname;
+	$scope.name = $routeParams.name
+	api.getModule($scope.devname, $scope.name, function(result) {
+		$scope.update(result);
+	});
+
+	/*
+	 * Code tab
+	 */
+
+	$scope.update = function(data) {
+		$scope.data = data;
+
+		$scope.files = [data.Files || []];
 		for (var i = 0; i < $scope.files.length; i++) {
-			if ($scope.files[i].length) {
-				$scope.selectFile($scope.files[i][0]);
-				return;
+			$scope.files[i].sort(function(a, b) {
+				if (a.Filename > b.Filename) {
+					return 1;
+				}
+				if (a.Filename < b.Filename) {
+					return -1;
+				}
+				return 0;
+			});
+		}
+	};
+});
+
+app.controller('CodeEditorCtrl', function($scope, $routeParams, api, fileApi) {
+	$scope.editorOptions = {
+		lineNumbers: true,
+		lineWrapping: true,
+		tabSize: 4,
+		indentUnit: 4,
+		indentWithTabs: true,
+		readOnly: 'nocursor'
+	};
+
+	var ext2mode = {
+		'js': 'text/javascript',
+		'c': 'text/x-csrc',
+		'cpp': 'text/x-c++src',
+		'java': 'text/x-java',
+		'py': 'text/x-python',
+		'avy': 'text/javascript'
+	};
+
+	$scope.$watch('files', function() {
+		if (!$scope.activeFile) {
+			for (var i = 0; $scope.files && i < $scope.files.length; i++) {
+				if ($scope.files[i].length) {
+					$scope.selectFile($scope.files[i][0]);
+					return;
+				}
 			}
 		}
-	}
+	});
 
 	$scope.selectFile = function(file) {
 		$scope.activeFile = file.Filename;
@@ -219,14 +306,6 @@ app.controller('VisualizationCtrl', function($scope, $routeParams, api, fileApi)
 			});
 		});
 	};
-
-	$scope.saveTitle = function() {
-		api.setVisualizationTitle($scope.key, $scope.data.Title);
-	};
-});
-
-app.controller('ModulesCtrl', function($scope) {
-
 });
 
 app.controller('AboutCtrl', function($scope) {

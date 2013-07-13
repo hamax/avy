@@ -1,1 +1,8 @@
-modules
+<div class="tlist">
+	<div class="item well" ng-repeat="module in modules" ng-click="click(module)">
+		<div class="pull-right">{{module.Date|date}}</div>
+		<b>{{module.Devname}}/{{module.Name}}</b>
+	</div>
+</div>
+<br style="clear: both" />
+<a ng-click="createNew()" class="btn btn-primary">New</a>
