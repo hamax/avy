@@ -8,7 +8,7 @@ app.config(function($routeProvider, $locationProvider) {
 		.when('/visualizations/:key/', {templateUrl: '/partials/visualization.html', controller: 'VisualizationCtrl'})
 		.when('/modules/', {templateUrl: '/partials/modules.html', controller: 'ModulesCtrl'})
 		.when('/modules/new', {templateUrl: '/partials/newModule.html', controller: 'NewModuleCtrl'})
-		.when('/modules/:devname/:name', {templateUrl: '/partials/module.html', controller: 'ModuleCtrl'})
+		.when('/modules/:devname/:name/', {templateUrl: '/partials/module.html', controller: 'ModuleCtrl'})
 		.when('/login', {redirectTo: function() { window.location = '/login'; }})
 		.when('/logout', {redirectTo: function() { window.location = '/logout'; }})
 		.otherwise({redirectTo: '/'});

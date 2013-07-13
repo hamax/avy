@@ -6,10 +6,6 @@ app.controller('ModulesCtrl', function($scope, $location, api) {
 	$scope.click = function(module) {
 		$location.path('/modules/' + module.Devname + '/' + module.Name + '/');
 	};
-
-	$scope.createNew = function() {
-		$location.path('/modules/new');
-	};
 });
 
 app.controller('NewModuleCtrl', function($scope, $location, api) {

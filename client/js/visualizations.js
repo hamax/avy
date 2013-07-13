@@ -6,12 +6,6 @@ app.controller('VisualizationsCtrl', function($scope, $location, api) {
 	$scope.click = function(key) {
 		$location.path('/visualizations/' + key + '/');
 	};
-
-	$scope.createNew = function() {
-		api.newVisualization(function(key) {
-			$location.path('/visualizations/' + key + '/');
-		});
-	};
 });
 
 app.controller('VisualizationCtrl', function($scope, $routeParams, api, fileApi) {
