@@ -35,7 +35,7 @@ func listVisualizations(w http.ResponseWriter, r *http.Request) {
 		if u == nil {
 			// TODO: access denied
 		}
-		q = q.Ancestor(common.GetAccountKey(c, u))
+		q = q.Ancestor(model.GetAccountKey(c, u))
 	}
 
 	// Get visualizations
@@ -61,7 +61,7 @@ func newVisualization(w http.ResponseWriter, r *http.Request) {
 
 	e := model.Visualization{"Untitled", time.Now(), nil}
 
-	key, err := datastore.Put(c, datastore.NewIncompleteKey(c, "visualization", common.GetAccountKey(c, u)), &e)
+	key, err := datastore.Put(c, datastore.NewIncompleteKey(c, "visualization", model.GetAccountKey(c, u)), &e)
 	if err != nil {
 		common.ServeError(c, w, err)
 		return

@@ -5,10 +5,6 @@ import (
 	"time"
 )
 
-type Account struct {
-	Devname string
-}
-
 type Visualization struct {
 	Title string
 	Date time.Time

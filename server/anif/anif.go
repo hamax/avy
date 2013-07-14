@@ -3,7 +3,6 @@ package anif
 import (
 	"appengine"
 	"appengine/blobstore"
-	"appengine/user"
 	"appengine/datastore"
 	"github.com/gorilla/mux"
 	"html/template"
@@ -60,12 +59,15 @@ func getModuleFile(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 
 	// Get module object
-	// TODO: get account key from devname
-	u := user.Current(c)
-	key := datastore.NewKey(c, "module", vars["name"], 0, common.GetAccountKey(c, u))
+	accKey, _, err := model.GetAccountByDevname(c, vars["devname"])
+	if err != nil {
+		common.ServeError(c, w, err)
+		return
+	}
+	key := datastore.NewKey(c, "module", vars["name"], 0, accKey)
 
 	var e model.Module
-	err := datastore.Get(c, key, &e)
+	err = datastore.Get(c, key, &e)
 	if err != nil {
 		common.ServeError(c, w, err)
 		return

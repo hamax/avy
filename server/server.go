@@ -65,7 +65,7 @@ func root(w http.ResponseWriter, r *http.Request) {
 
 	// Get user and account
 	u := user.Current(c)
-	acc, err := common.GetAccount(c, u)
+	acc, err := model.GetAccount(c, u)
 	if err != nil {
 		common.ServeError(c, w, err)
 		return

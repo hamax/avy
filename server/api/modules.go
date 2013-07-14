@@ -34,7 +34,7 @@ func listModules(w http.ResponseWriter, r *http.Request) {
 		if u == nil {
 			// TODO: access denied
 		}
-		q = q.Ancestor(common.GetAccountKey(c, u))
+		q = q.Ancestor(model.GetAccountKey(c, u))
 	}
 
 	// Get modules
@@ -58,7 +58,7 @@ func newModule(w http.ResponseWriter, r *http.Request) {
 	c := appengine.NewContext(r)
 	u := user.Current(c)
 	
-	acc, err := common.GetAccount(c, u)
+	acc, err := model.GetAccount(c, u)
 	if err != nil {
 		common.ServeError(c, w, err)
 		return
@@ -74,7 +74,7 @@ func newModule(w http.ResponseWriter, r *http.Request) {
 			// TODO: error
 		}
 		acc.Devname = devname
-		err := common.SaveAccount(c, u, acc)
+		err := model.SaveAccount(c, u, acc)
 		if err != nil {
 			common.ServeError(c, w, err)
 			return
@@ -84,7 +84,7 @@ func newModule(w http.ResponseWriter, r *http.Request) {
 	}
 
 	e := model.Module{devname, name, time.Now(), nil}
-	_, err = datastore.Put(c, datastore.NewKey(c, "module", name, 0, common.GetAccountKey(c, u)), &e)
+	_, err = datastore.Put(c, datastore.NewKey(c, "module", name, 0, model.GetAccountKey(c, u)), &e)
 	if err != nil {
 		common.ServeError(c, w, err)
 		return
@@ -97,12 +97,15 @@ func getModule(w http.ResponseWriter, r *http.Request) {
 	c := appengine.NewContext(r)
 	vars := mux.Vars(r)
 
-	// TODO: get account key from devname
-	u := user.Current(c)
-	key := datastore.NewKey(c, "module", vars["name"], 0, common.GetAccountKey(c, u))
+	accKey, _, err := model.GetAccountByDevname(c, vars["devname"])
+	if err != nil {
+		common.ServeError(c, w, err)
+		return
+	}
+	key := datastore.NewKey(c, "module", vars["name"], 0, accKey)
 
 	var e model.Module
-	err := datastore.Get(c, key, &e)
+	err = datastore.Get(c, key, &e)
 	if err != nil {
 		common.ServeError(c, w, err)
 		return
@@ -128,13 +131,16 @@ func uploadModuleFile(w http.ResponseWriter, r *http.Request) {
 	c := appengine.NewContext(r)
 	vars := mux.Vars(r)
 
-	// TODO: get account key from devname
-	u := user.Current(c)
-	key := datastore.NewKey(c, "module", vars["name"], 0, common.GetAccountKey(c, u))
+	accKey, _, err := model.GetAccountByDevname(c, vars["devname"])
+	if err != nil {
+		common.ServeError(c, w, err)
+		return
+	}
+	key := datastore.NewKey(c, "module", vars["name"], 0, accKey)
 
 	// Start a datastore transaction
 	var e model.Module
-	err := datastore.RunInTransaction(c, func(c appengine.Context) error {
+	err = datastore.RunInTransaction(c, func(c appengine.Context) error {
 		// Get the visualization object
 		err := datastore.Get(c, key, &e)
 		if err != nil {
