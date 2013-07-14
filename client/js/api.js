@@ -5,8 +5,8 @@ app.service('api', function($http) {
 	 * Visualizations
 	 */
 
-	this.listVisualizations = function(callback) {
-		$http.get('/api/visualizations/').success(function(result) {
+	this.listVisualizations = function(filters, callback) {
+		$http.get('/api/visualizations/?' + $.param(filters)).success(function(result) {
 			for (var i = 0; i < result.length; i++) {
 				result[i].Date = Date.parse(result[i].Date);
 			}
@@ -34,8 +34,8 @@ app.service('api', function($http) {
 	 * Modules
 	 */
 
-	this.listModules = function(callback) {
-		$http.get('/api/modules/').success(function(result) {
+	this.listModules = function(filters, callback) {
+		$http.get('/api/modules/?' + $.param(filters)).success(function(result) {
 			for (var i = 0; i < result.length; i++) {
 				result[i].Date = Date.parse(result[i].Date);
 			}

@@ -1,5 +1,5 @@
 app.controller('DashboardCtrl', function($scope, $location, api) {
-	api.listVisualizations(function(result) {
+	api.listVisualizations({'user': 'me'}, function(result) {
 		$scope.visualizations = result;
 	});
 
@@ -13,7 +13,7 @@ app.controller('DashboardCtrl', function($scope, $location, api) {
 		});
 	};
 
-	api.listModules(function(result) {
+	api.listModules({'user': 'me'}, function(result) {
 		$scope.modules = result;
 	});
 

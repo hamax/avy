@@ -1,5 +1,5 @@
 app.controller('VisualizationsCtrl', function($scope, $location, api) {
-	api.listVisualizations(function(result) {
+	api.listVisualizations({}, function(result) {
 		$scope.visualizations = result;
 	});
 

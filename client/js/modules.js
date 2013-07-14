@@ -1,5 +1,5 @@
 app.controller('ModulesCtrl', function($scope, $location, api) {
-	api.listModules(function(result) {
+	api.listModules({}, function(result) {
 		$scope.modules = result;
 	});
 
