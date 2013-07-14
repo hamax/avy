@@ -19,13 +19,12 @@ app.service('fileApi', function() {
 		}
 	}, false);
 
-	this.getVisualizationFile = function(key, filename, callback) {
+	this.getFile = function(url, callback) {
 		var msg = {
 			'callback': callback,
 			'content': {
 				'id': nextId++,
-				'visualization': key,
-				'filename': filename
+				'url': url
 			}
 		};
 		messages[msg.content.id] = msg;
@@ -69,7 +68,7 @@ app.controller('CodeEditorCtrl', function($scope, $routeParams, api, fileApi) {
 		$scope.activeFile = file.Filename;
 		$scope.editor = '';
 		$scope.editorMode = ext2mode[file.ext];
-		fileApi.getVisualizationFile($scope.key, file.Filename, function(content) {
+		fileApi.getFile(file.url, function(content) {
 			$scope.$apply(function() {
 				$scope.editor = content;
 			});

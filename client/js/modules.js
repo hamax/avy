@@ -33,6 +33,11 @@ app.controller('ModuleCtrl', function($scope, $routeParams, api, fileApi) {
 
 		$scope.files = [data.Files || []];
 		for (var i = 0; i < $scope.files.length; i++) {
+			for (var j = 0; j < $scope.files[i].length; j++) {
+				var ext = $scope.files[i][j].Filename.split('.').pop();
+				$scope.files[i][j].ext = ext;
+				$scope.files[i][j].url = '/modules/' + $scope.devname + '/' + $scope.name + '/' + $scope.files[i][j].Filename;
+			}
 			$scope.files[i].sort(function(a, b) {
 				if (a.Filename > b.Filename) {
 					return 1;

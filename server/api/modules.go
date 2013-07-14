@@ -2,6 +2,7 @@ package api
 
 import (
 	"appengine"
+	"appengine/blobstore"
 	"appengine/user"
 	"appengine/datastore"
 	"github.com/gorilla/mux"
@@ -16,6 +17,8 @@ func modulesInit(s *mux.Router) {
 	s.HandleFunc("/", listModules).Methods("GET")
 	s.HandleFunc("/", newModule).Methods("POST")
 	s.HandleFunc("/{devname}/{name}/", getModule).Methods("GET")
+	s.HandleFunc("/{devname}/{name}/uploadurl", getModuleFileUploadUrl).Methods("GET")
+	s.HandleFunc("/{devname}/{name}/files", uploadModuleFile).Methods("POST")
 }
 
 func listModules(w http.ResponseWriter, r *http.Request) {
@@ -100,6 +103,53 @@ func getModule(w http.ResponseWriter, r *http.Request) {
 
 	var e model.Module
 	err := datastore.Get(c, key, &e)
+	if err != nil {
+		common.ServeError(c, w, err)
+		return
+	}
+
+	common.WriteJson(c, w, e)
+}
+
+func getModuleFileUploadUrl(w http.ResponseWriter, r *http.Request) {
+	c := appengine.NewContext(r)
+	vars := mux.Vars(r)
+
+	uploadUrl, err := blobstore.UploadURL(c, "/api/modules/" + vars["devname"] + "/" + vars["name"] + "/files", nil)
+	if err != nil {
+		common.ServeError(c, w, err)
+		return
+	}
+
+	common.WriteJson(c, w, uploadUrl.Path)
+}
+
+func uploadModuleFile(w http.ResponseWriter, r *http.Request) {
+	c := appengine.NewContext(r)
+	vars := mux.Vars(r)
+
+	// TODO: get account key from devname
+	u := user.Current(c)
+	key := datastore.NewKey(c, "module", vars["name"], 0, common.GetAccountKey(c, u))
+
+	// Start a datastore transaction
+	var e model.Module
+	err := datastore.RunInTransaction(c, func(c appengine.Context) error {
+		// Get the visualization object
+		err := datastore.Get(c, key, &e)
+		if err != nil {
+			return err
+		}
+
+		e.Files, err = uploadFile(c, r, e.Files)
+		if err != nil {
+			return err
+		}
+		
+		// Save the visualization object
+		key, err = datastore.Put(c, key, &e)
+		return err
+	}, nil)
 	if err != nil {
 		common.ServeError(c, w, err)
 		return

@@ -22,7 +22,7 @@ const (
 // prod
 /*
 const (
-	domain = "avy-project.appspot.com"
+	domain = "algoviz.net"
 	port = ""
 )
 */

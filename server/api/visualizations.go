@@ -137,23 +137,9 @@ func getVisualizationFileUploadUrl(w http.ResponseWriter, r *http.Request) {
 	common.WriteJson(c, w, uploadUrl.Path)
 }
 
-// TODO: delte file from blobstore if not needed anymore
 func uploadVisualizationFile(w http.ResponseWriter, r *http.Request) {
 	c := appengine.NewContext(r)
 	vars := mux.Vars(r)
-
-	// Check if we have a file uploaded
-	blobs, _, err := blobstore.ParseUpload(r)
-	if err != nil {
-		common.ServeError(c, w, err)
-		return
-	}
-
-	files := blobs["file"]
-	if len(files) == 0 {
-		c.Errorf("no file uploaded")
-		return
-	}
 
 	key, err := datastore.DecodeKey(vars["key"])
 	if err != nil {
@@ -170,27 +156,11 @@ func uploadVisualizationFile(w http.ResponseWriter, r *http.Request) {
 			return err
 		}
 
-		// Add the new file
-		for i := range files {
-			nfile := model.File{files[i].Filename, files[i].BlobKey}
-
-			// Check if it already exists
-			exists := false
-			for j := range e.Files {
-				if e.Files[j].Filename == nfile.Filename {
-					// Overwrite
-					// TODO: delete old file
-					e.Files[j] = nfile
-					exists = true
-					break
-				}
-			}
-
-			if !exists {
-				e.Files = append(e.Files, nfile)
-			}
+		e.Files, err = uploadFile(c, r, e.Files)
+		if err != nil {
+			return err
 		}
-		
+
 		// Save the visualization object
 		key, err = datastore.Put(c, key, &e)
 		return err

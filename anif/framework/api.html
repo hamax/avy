@@ -10,7 +10,7 @@
 						event.source.postMessage({id: event.data.id, content: request.responseText}, event.origin);
 					}
 				}
-				request.open('GET', '/visualizations/' + event.data.visualization + '/' + event.data.filename, true);
+				request.open('GET', event.data.url, true);
 				request.send();
 			}, false);
 		</script>
