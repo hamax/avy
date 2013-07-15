@@ -49,10 +49,13 @@ void avy_print(const char *name, int n, ...) {
 		return;
 	}
 
-	fprintf(avy_file, "%s", name);
+	fprintf(avy_file, "%s(", name);
 	va_list ap;
 	va_start(ap, n);
 	for (i = 0; i < n; i++) {
+		if (i > 0) {
+			fprintf(avy_file, ", ");
+		}
 		avy_param arg = va_arg(ap, avy_param);
 		switch (arg.type) {
 			case 0:
@@ -61,7 +64,7 @@ void avy_print(const char *name, int n, ...) {
 			#ifdef __cplusplus
 			case 1:
 				std::vector<int> *a = (std::vector<int>*)arg.data;
-				fprintf(avy_file, " [");
+				fprintf(avy_file, "[");
 				for (j = 0; j < a->size(); j++) {
 					if (j > 0) {
 						fprintf(avy_file, ",");
@@ -74,5 +77,5 @@ void avy_print(const char *name, int n, ...) {
 		}
 	}
 	va_end(ap);
-	fprintf(avy_file, "\n");
+	fprintf(avy_file, ")\n");
 }

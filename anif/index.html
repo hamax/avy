@@ -8,22 +8,73 @@
 				padding: 0;
 				margin: 0;
 			}
+
+			.playback {
+				position: relative;
+				height: 35px;
+			}
+
+			.playback .slider {
+				position: absolute;
+				left: 20px;
+				top: 10px;
+				right: 55px;
+			}
+
+			.playback .play {
+				position: absolute;
+				top: 5px;
+				right: 10px;
+				width: 25px;
+				height: 25px;
+			}
+
+			.playback .play .ui-icon {
+				left: 11px;
+			}
+
+			circle.node {
+				cursor: pointer;
+				stroke: #3182bd;
+				/*stroke-width: 1.5px;*/
+			}
+
+			line.link {
+				fill: none;
+				stroke: #9ecae1;
+				/*stroke-width: 1.5px;*/
+			}
 		</style>
-		<script data-main="main" src="/framework/libs/require.js"></script>
+		<link rel="stylesheet" href="http://code.jquery.com/ui/1.10.3/themes/ui-lightness/jquery-ui.css" />
+		<script data-main="avy" src="/framework/libs/require.js"></script>
 		<script>
 			requirejs.config({
 				shim: {
 					'd3': {
 						exports: 'd3'
+					},
+					'jquery': {
+						exports: '$'
+					},
+					'jquery-ui': {
+						exports: '$',
+						deps: ['jquery']
 					}
 				},
 				paths: {
-					'd3': '/framework/libs/d3.v3'
+					'd3': '/framework/libs/d3.v3',
+					'jquery': 'http://code.jquery.com/jquery-1.9.1',
+					'jquery-ui': 'http://code.jquery.com/ui/1.10.3/jquery-ui',
+					'm': '/modules/'
 				}
 			});
 		</script>
 	</head>
 	<body>
+		<div class="playback">
+			<div class="slider"></div>
+			<button class="play"></button>
+		</div>
 	</body>
 </html>
 {{end}}
