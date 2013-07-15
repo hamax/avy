@@ -78,3 +78,15 @@ app.directive('contenteditable', function() {
 		}
 	};
 });
+
+app.directive('visualizationPreview', function() {
+	return {
+		link: function(scope, elm, attrs, ctrl) {
+			elm.html('<iframe src="http://anif.' +
+				settings.domain + settings.port +
+				'/visualizations/' +
+				scope.key +
+				'/" frameborder="0" style="width: 100%; height: 640px"></iframe>');
+		}
+	}
+});
