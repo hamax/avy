@@ -1,10 +1,12 @@
 define(['d3', 'jquery'], function(d3, $) {
-	function list(svg, nodeStyle) {
-		this.nodes = [];
-
-		this.node = svg.el.append('g').selectAll('.node');
-
+	function list(layout, nodeStyle) {
+		this.layout = layout;
 		this.nodeStyle = nodeStyle;
+
+		this.nodes = [];
+		this.node = layout.el.selectAll();
+
+		this.layout.onWidthChange(this.__update__.bind(this));
 	}
 
 	list.prototype.add = function(id, extra) {
@@ -26,10 +28,18 @@ define(['d3', 'jquery'], function(d3, $) {
 
 	list.prototype.__update__ = function() {
 		// Calculate node x, y
+		var x = -this.nodeStyle.radius, y = this.nodeStyle.radius * 2;
 		for (var i = 0; i < this.nodes.length; i++) {
-			this.nodes[i].x = i * 50 + 25;
-			this.nodes[i].y = 25;
+			x += this.nodeStyle.radius * 3;
+			if (x + this.nodeStyle.radius * 2 > this.layout.width) {
+				x = this.nodeStyle.radius * 2;
+				y += this.nodeStyle.radius * 3;
+			}
+
+			this.nodes[i].x = x;
+			this.nodes[i].y = y;
 		}
+		this.layout.setHeight(y + this.nodeStyle.radius * 2);
 
 		// Bind data
 		this.node = this.node.data(this.nodes, function(d) { return d.id; });

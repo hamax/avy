@@ -1,18 +1,19 @@
 define(['d3', 'jquery'], function(d3, $) {
-	function force(svg, nodeStyle, linkStyle) {
+	function force(layout, nodeStyle, linkStyle) {
 		this.nodes = [];
 		this.links = [];
 
 		this.force = d3.layout.force()
 			.charge(-200)
-			.size([svg.width, svg.height])
+			.size([800, 600])
 			.nodes(this.nodes)
 			.links(this.links)
 			.linkDistance(200)
 			.on('tick', this._forceTick.bind(this));
 
-		this.link = svg.el.append('g').selectAll('.link');
-		this.node = svg.el.append('g').selectAll('.node');
+		layout.setHeight(600);
+		this.link = layout.el.append('g').selectAll();
+		this.node = layout.el.append('g').selectAll();
 
 		this.nodeStyle = nodeStyle;
 		this.linkStyle = linkStyle;
