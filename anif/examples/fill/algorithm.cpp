@@ -7,7 +7,6 @@
 #include "../../tools/avy.h"
 #else
 #define AVY(...)
-#define P(...)
 #endif
 
 using namespace std;
