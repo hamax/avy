@@ -1,16 +1,37 @@
 define(['d3'], function(d3) {
-	function simple(radius) {
+	function simple(radius, text) {
+		// Node radius, default to 15
 		this.radius = radius || 15;
+		
+		// What text to display on the node (id, none or custom)
+		if (text == undefined) {
+			this.textFunc = function(d) {
+				return d.id;
+			};
+		} else if (text == null) {
+			this.textFunc = null;
+		} else {
+			this.textFunc = function(d) {
+				return d.extra[text];
+			};
+		}
 	}
 
 	simple.prototype.enter = function(n) {
-		// For each new node append a circle
-		var c = n.append('circle');
-		// Set atrributes
+		var g = n.append('g');
+		
+		var c = g.append('circle');
 		c.attr('class', 'node');
 		c.attr('r', this.radius);
-		// Return a reference to the newly created circles
-		return c;
+
+		var t = g.append('text');
+		t.attr('font-family', 'sans-serif');
+		t.attr('fill', 'yellow');
+		t.attr('font-size', '20px');
+		t.attr('text-anchor', 'middle');
+		t.attr('y', 5);
+
+		return g;
 	};
 
 	simple.prototype.exit = function(n) {
@@ -19,7 +40,7 @@ define(['d3'], function(d3) {
 	};
 
 	simple.prototype.update = function(n, nodes) {
-		n.style('fill', function(d) {
+		n.select('circle').style('fill', function(d) {
 			if (d.extra.color) {
 				return d.extra.color
 			}
@@ -29,6 +50,10 @@ define(['d3'], function(d3) {
 			return '#0000ff';
 		});
 
+		if (this.textFunc) {
+			n.select('text').text(this.textFunc);
+		}
+
 		// Reset one step styles
 		for (var i = 0; i < nodes.length; i++) {
 			if (nodes[i].extra.selected == 'step') {
@@ -36,6 +61,12 @@ define(['d3'], function(d3) {
 			}
 		}
 	};
+
+	simple.prototype.updatePosition = function(n, nodes) {
+		n.attr('transform', function(d) {
+			return 'translate(' + d.x + ', ' + d.y + ')';
+		});
+	}
 
 	return simple;
 });

@@ -36,7 +36,9 @@ define(['jquery-ui'], function($) {
 			});
 
 			this._interval();
-			this.interval = setInterval(this._interval.bind(this), 2000);
+			if (this.play) {
+				this.interval = setInterval(this._interval.bind(this), 2000);
+			}
 		}.bind(this));
 	};
 
@@ -52,7 +54,11 @@ define(['jquery-ui'], function($) {
 		for (var i = 0; i < this.steps[this.step].length; i++) {
 			eval('this.v.' + this.steps[this.step][i] + ';');
 		}
-		this.v.graph.update();
+		
+		// Call updates
+		for (var k in this.v) {
+			this.v[k].__update__();
+		}
 	};
 
 	playback.prototype._playClick = function(e) {

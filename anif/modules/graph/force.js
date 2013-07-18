@@ -11,8 +11,8 @@ define(['d3', 'jquery'], function(d3, $) {
 			.linkDistance(200)
 			.on('tick', this._forceTick.bind(this));
 
-		this.node = svg.el.selectAll('.node');
-		this.link = svg.el.selectAll('.link');
+		this.link = svg.el.append('g').selectAll('.link');
+		this.node = svg.el.append('g').selectAll('.node');
 
 		this.nodeStyle = nodeStyle;
 		this.linkStyle = linkStyle;
@@ -29,8 +29,17 @@ define(['d3', 'jquery'], function(d3, $) {
 	};
 
 	force.prototype.delNode = function(id) {
+		id = JSON.stringify(id);
+
+		// Delete broken links
+		for (var i = 0; i < this.links.length; i++) {
+			if (this.links[i].source.id == id || this.links[i].target.id == id) {
+				this.links.splice(i, 1);
+				i--;
+			}
+		}
 		// Delete from the node list
-		var index = this._nodeIndex(JSON.stringify(id));
+		var index = this._nodeIndex(id);
 		if (index != -1) {
 			this.nodes.splice(index, 1);
 		}
@@ -80,7 +89,7 @@ define(['d3', 'jquery'], function(d3, $) {
 		$.extend(true, this.links[index].extra, extra);
 	};
 
-	force.prototype.update = function() {
+	force.prototype.__update__ = function() {
 		// Restart force layout
 		this.force.start();
 
@@ -122,15 +131,8 @@ define(['d3', 'jquery'], function(d3, $) {
 	}
 
 	force.prototype._forceTick = function() {
-		this.node
-			.attr('cx', function(d) { return d.x; })
-			.attr('cy', function(d) { return d.y; });
-
-		this.link
-			.attr('x1', function(d) { return d.source.x; })
-			.attr('y1', function(d) { return d.source.y; })
-			.attr('x2', function(d) { return d.target.x; })
-			.attr('y2', function(d) { return d.target.y; });
+		this.linkStyle.updatePosition(this.link, this.links);
+		this.nodeStyle.updatePosition(this.node, this.nodes);
 	};
 
 	return force;
