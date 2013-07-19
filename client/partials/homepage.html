@@ -1,11 +1,20 @@
 <div class="container">
+	<div class="headline"><span class="h1">Visualize</span> your <span class="h2">algorithms</span><div>
+
 	<carousel interval="5000">
 		<slide ng-repeat="slide in slides" active="slide.active">
-			<img ng-src="{{slide.image}}" style="margin:auto;">
-			<div class="carousel-caption">
-				<h4>Slide {{$index}}</h4>
-				<p>Yes, this is cat.</p>
-			</div>
+			<a href="{{slide.link}}" style="display: block">
+				<div style="padding: {{slide.padding}}px 0; text-align: center;">
+					<img ng-src="{{slide.image}}">
+				</div>
+				<div class="carousel-caption">
+					<p>{{slide.caption}}</p>
+				</div>
+			</a>
 		</slide>
 	</carousel>
+
+	<div class="headline text-right">and <span class="h3">teach</span>.</div>
+	<div class="headline text-right">and <span class="h4">debug</span>.</div>
+	<div class="headline text-right">and <span class="h5">optimize</span>.</div>
 </div>

@@ -16,6 +16,45 @@ body {
     }
 }
 
+/* Homepage */
+
+.carousel {
+    margin: 20px 0;
+}
+
+.text-right {
+    text-align: right;
+}
+
+.headline {
+    font-size: 30px;
+    padding: 10px;
+}
+
+.headline .h1, .h2, .h3, .h4, .h5 {
+    font-weight: bold;
+}
+
+.headline .h1 {
+    color: #149bdf;
+}
+
+.headline .h2 {
+    color: #ae6010;
+}
+
+.headline .h3 {
+    color: #b03d7b;
+}
+
+.headline .h4 {
+    color: #bd3d11;
+}
+
+.headline .h5 {
+    color: #51a351;
+}
+
 /* Visualization list */
 
 .tlist .item {
