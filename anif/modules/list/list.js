@@ -5,12 +5,14 @@ define(['d3', 'jquery'], function(d3, $) {
 
 		this.nodes = [];
 		this.node = layout.el.selectAll();
+		this.history = [];
 
 		this.layout.onWidthChange(this.__update__.bind(this));
 	}
 
 	list.prototype.add = function(id, extra) {
 		this.nodes.push({id: JSON.stringify(id), extra: extra || {}});
+		this.history.push(this.pop.bind(this));
 	};
 
 	list.prototype.del = function(id) {
@@ -18,12 +20,32 @@ define(['d3', 'jquery'], function(d3, $) {
 		var index = this._nodeIndex(JSON.stringify(id));
 		if (index != -1) {
 			this.nodes.splice(index, 1);
+			// TODO: history
 		}
 	};
 
-	list.prototype.update = function(id, extra) {
+	list.prototype.pop = function() {
+		if (!this.nodes.length) {
+			return "List is empty."
+		}
+
+		var index = this.nodes.length - 1;
+		this.history.push(this.add.bind(this, this.nodes[index].id, $.extend(true, {}, this.nodes[index].extra)));
+		this.nodes.pop();
+	};
+
+	list.prototype.update = function(id, extra, replace) {
 		var index = this._nodeIndex(JSON.stringify(id));
-		$.extend(true, this.nodes[index].extra, extra);
+		if (index == -1) {
+			return "Element doesn't exist."
+		}
+
+		this.history.push(this.update.bind(this, id, $.extend(true, {}, this.nodes[index].extra, true)));
+		if (replace) {
+			this.nodes[index].extra = extra;
+		} else {
+			$.extend(true, this.nodes[index].extra, extra);
+		}
 	};
 
 	list.prototype.__update__ = function() {
@@ -49,6 +71,12 @@ define(['d3', 'jquery'], function(d3, $) {
 		this.nodeStyle.exit(this.node.exit());
 		this.nodeStyle.update(this.node, this.nodes);
 		this.nodeStyle.updatePosition(this.node, this.nodes);
+	};
+
+	list.prototype.__reverse__ = function() {
+		var r = this.history.pop()();
+		this.history.pop();
+		return r;
 	};
 
 	list.prototype._nodeIndex = function(id) {
