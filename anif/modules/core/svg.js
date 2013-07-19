@@ -13,6 +13,9 @@ define(['d3', 'jquery'], function(d3, $) {
 
 	svg.prototype._updateHeight = function() {
 		this.el.attr('height', this.layout.height);
+		if (window.top != window.self && window.location.hash) {
+			window.top.postMessage({'type': 'resize', 'height': $(document).height()}, window.location.hash.substr(1));
+		}
 	};
 
 	// Layout class

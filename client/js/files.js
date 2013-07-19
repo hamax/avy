@@ -14,7 +14,7 @@ app.service('fileApi', function() {
 	}
 
 	window.addEventListener('message', function(event) {
-		if (event.origin == 'http://anif.' + settings.domain + settings.port) {
+		if (event.origin == 'http://anif.' + settings.domain + settings.port && event.data.type == 'fileapi') {
 			messages[event.data.id].callback(event.data.content);
 		}
 	}, false);

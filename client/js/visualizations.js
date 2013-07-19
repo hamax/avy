@@ -85,8 +85,17 @@ app.directive('visualizationPreview', function() {
 			elm.html('<iframe src="http://anif.' +
 				settings.domain + settings.port +
 				'/visualizations/' +
-				scope.key +
-				'/" frameborder="0" style="width: 100%; height: 640px"></iframe>');
+				scope.key + '/' +
+				'#http://www.' + settings.domain + settings.port +
+				'" frameborder="0" style="width: 100%; display: none"></iframe>');
+			var iframe = $(elm).find('iframe');
+
+			window.addEventListener('message', function(event) {
+				if (event.origin == 'http://anif.' + settings.domain + settings.port && event.data.type == 'resize') {
+					iframe.height(event.data.height);
+					iframe.css('display', 'block');
+				}
+			}, false);
 		}
 	}
 });
