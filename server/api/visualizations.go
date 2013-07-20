@@ -97,7 +97,14 @@ func getVisualization(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	common.WriteJson(c, w, e)
+	res := map[string]interface{}{
+		"Owner": key.Parent().StringID(),
+		"Title": e.Title,
+		"Date": e.Date,
+		"Files": e.Files,
+	}
+
+	common.WriteJson(c, w, res)
 }
 
 func setVisualizationTitle(w http.ResponseWriter, r *http.Request) {

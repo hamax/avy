@@ -24,6 +24,10 @@ app.controller('ModuleCtrl', function($scope, $routeParams, api, fileApi) {
 		$scope.update(result);
 	});
 
+	$scope.readOnly = function() {
+		return !$scope.data || $scope.data.Owner != settings.user;
+	};
+
 	/*
 	 * Code tab
 	 */

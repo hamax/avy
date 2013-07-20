@@ -14,6 +14,10 @@ app.controller('VisualizationCtrl', function($scope, $routeParams, api, fileApi)
 		$scope.update(result);
 	});
 
+	$scope.readOnly = function() {
+		return !$scope.data || $scope.data.Owner != settings.user;
+	};
+
 	$scope.saveTitle = function() {
 		api.setVisualizationTitle($scope.key, $scope.data.Title);
 	};

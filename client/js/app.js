@@ -22,4 +22,8 @@ app.controller('RootCtrl', function($scope, $location) {
 	$scope.isActive = function(route) {
 		return $location.path().indexOf(route) == 0;
 	};
+
+	$scope.isAuthenticated = function() {
+		return settings.user;
+	};
 });

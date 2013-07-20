@@ -18,8 +18,9 @@
 		<!-- JS -->
 		<script>
 			var settings = {
-				'domain': '{{.Domain}}',
-				'port': '{{.Port}}'
+				domain: '{{.Domain}}',
+				port: '{{.Port}}',
+				user: {{if .User}}'{{.User.ID}}'{{else}}null{{end}}
 			};
 		</script>
 		<script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
@@ -69,7 +70,7 @@
 							{{end}}
 						</div>
 						<ul class="nav">
-							<li ng-class="{active: isActive('/dashboard')}"><a href="/dashboard">Dashboard</a></li>
+							<li ng-show="isAuthenticated()" ng-class="{active: isActive('/dashboard')}"><a href="/dashboard">Dashboard</a></li>
 							<li ng-class="{active: isActive('/visualizations')}"><a href="/visualizations">Visualizations</a></li>
 							<li ng-class="{active: isActive('/modules')}"><a href="/modules">Modules</a></li>
 						</ul>

@@ -125,7 +125,15 @@ func getModule(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	common.WriteJson(c, w, e)
+	res := map[string]interface{}{
+		"Owner": key.Parent().StringID(),
+		"Devname": e.Devname,
+		"Name": e.Name,
+		"Date": e.Date,
+		"Files": e.Files,
+	}
+
+	common.WriteJson(c, w, res)
 }
 
 func getModuleFileUploadUrl(w http.ResponseWriter, r *http.Request) {

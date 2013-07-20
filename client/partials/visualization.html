@@ -1,5 +1,10 @@
 <div class="container-fluid">
-	<h1 contenteditable change="saveTitle()" ng-model="data.Title"></h1>
+	<div ng-hide="readOnly()">
+		<h1 contenteditable change="saveTitle()" ng-model="data.Title"></h1>
+	</div>
+	<div ng-show="readOnly()">
+		<h1>{{data.Title}}</h1>
+	</div>
 	<tabset>
 		<tab heading="Code">
 			<div class="row-fluid" ng-controller="CodeEditorCtrl">
@@ -7,12 +12,16 @@
 					<textarea ui-codemirror="editorOptions" ng-model="editor" mode="editorMode"></textarea>
 				</div>
 				<div class="span4 well">
-					<h2>Files</h2>
-					<ul ng-repeat="fileGrp in files" class="nav nav-pills nav-stacked">
-						<li ng-repeat="file in fileGrp" ng-click="selectFile(file)" ng-class="{'active': activeFile == file.Filename}"><a href="#">{{file.Filename}}</a></li>
-					</ul>
-					<h3>Upload</h3>
-					<div ng-file-upload="/api/visualizations/{{key}}/uploadurl"></div>
+					<div>
+						<h2>Files</h2>
+						<ul ng-repeat="fileGrp in files" class="nav nav-pills nav-stacked">
+							<li ng-repeat="file in fileGrp" ng-click="selectFile(file)" ng-class="{'active': activeFile == file.Filename}"><a href="#">{{file.Filename}}</a></li>
+						</ul>
+					</div>
+					<div ng-hide="readOnly()">
+						<h3>Upload</h3>
+						<div ng-file-upload="/api/visualizations/{{key}}/uploadurl"></div>
+					</div>
 				</div>
 			</div>
 		</tab>
