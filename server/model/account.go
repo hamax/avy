@@ -41,7 +41,11 @@ func GetAccountByDevname(c appengine.Context, devname string) (*datastore.Key, *
 		return nil, nil, err
 	}
 
-	// TODO: check if it's exactly one
+	// Not found
+	if len(keys) == 0 {
+		return nil, nil, nil
+	}
+
 	return keys[0], accounts[0], nil
 }
 

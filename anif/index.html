@@ -66,3 +66,18 @@
 	</body>
 </html>
 {{end}}
+{{define "noavyjs"}}
+<html>
+	<head>
+		<title>Anif</title>
+		<script>
+			if (window.top != window.self && window.location.hash) {
+				window.top.postMessage({'type': 'resize', 'height': 40}, window.location.hash.substr(1));
+			}
+		</script>
+	</head>
+	<body>
+		No avy.js found.
+	</body>
+</html>
+{{end}}

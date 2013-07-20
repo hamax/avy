@@ -74,3 +74,25 @@ body {
     overflow-x: auto;
     overflow-y: hidden;
 }
+
+/* 404 */
+
+.e404 {
+    padding: 80px 0 40px 0;
+    line-height: 40px;
+    max-width: 680px;
+    margin: auto;
+}
+
+.e404 .h1 {
+    font-size: 160px;
+    font-weight: bold;
+}
+
+.e404 .h2 {
+    font-size: 80px;
+}
+
+.e404 .h3 {
+    font-size: 40px;
+}

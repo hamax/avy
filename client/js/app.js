@@ -11,7 +11,7 @@ app.config(function($routeProvider, $locationProvider) {
 		.when('/modules/:devname/:name/', {templateUrl: '/partials/module.html', controller: 'ModuleCtrl'})
 		.when('/login', {redirectTo: function() { window.location = '/login'; }})
 		.when('/logout', {redirectTo: function() { window.location = '/logout'; }})
-		.otherwise({redirectTo: '/'});
+		.otherwise({templateUrl: '/partials/404.html'});
 
 	$locationProvider
 		.html5Mode(true)
