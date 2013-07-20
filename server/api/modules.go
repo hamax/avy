@@ -32,7 +32,8 @@ func listModules(w http.ResponseWriter, r *http.Request) {
 	if len(fUser) > 0 && fUser[0] == "me" {
 		u := user.Current(c)
 		if u == nil {
-			// TODO: access denied
+			common.Serve401(w)
+			return
 		}
 		q = q.Ancestor(model.GetAccountKey(c, u))
 	}
@@ -63,6 +64,10 @@ func newModule(w http.ResponseWriter, r *http.Request) {
 		common.ServeError(c, w, err)
 		return
 	}
+	if acc == nil {
+		common.Serve401(w)
+		return
+	}
 
 	// Parse form data
 	devname := r.PostFormValue("devname")
@@ -71,7 +76,8 @@ func newModule(w http.ResponseWriter, r *http.Request) {
 	// Set user developer name
 	if acc.Devname == "" {
 		if devname == "" {
-			// TODO: error
+			common.Serve404(w) // TODO: maybe 400 instead
+			return
 		}
 		acc.Devname = devname
 		err := model.SaveAccount(c, u, acc)
@@ -99,6 +105,10 @@ func getModule(w http.ResponseWriter, r *http.Request) {
 
 	accKey, _, err := model.GetAccountByDevname(c, vars["devname"])
 	if err != nil {
+		if err == datastore.ErrNoSuchEntity {
+			common.Serve404(w)
+			return
+		}
 		common.ServeError(c, w, err)
 		return
 	}
@@ -107,6 +117,10 @@ func getModule(w http.ResponseWriter, r *http.Request) {
 	var e model.Module
 	err = datastore.Get(c, key, &e)
 	if err != nil {
+		if err == datastore.ErrNoSuchEntity {
+			common.Serve404(w)
+			return
+		}
 		common.ServeError(c, w, err)
 		return
 	}
@@ -130,13 +144,30 @@ func getModuleFileUploadUrl(w http.ResponseWriter, r *http.Request) {
 func uploadModuleFile(w http.ResponseWriter, r *http.Request) {
 	c := appengine.NewContext(r)
 	vars := mux.Vars(r)
+	u := user.Current(c)
+
+	// Check if user is logged in
+	if u == nil {
+		common.Serve401(w)
+		return
+	}
 
 	accKey, _, err := model.GetAccountByDevname(c, vars["devname"])
 	if err != nil {
+		if err == datastore.ErrNoSuchEntity {
+			common.Serve404(w)
+			return
+		}
 		common.ServeError(c, w, err)
 		return
 	}
 	key := datastore.NewKey(c, "module", vars["name"], 0, accKey)
+
+	// Check if user is the owner
+	if key.Parent().StringID() != u.ID {
+		common.Serve403(w)
+		return
+	}
 
 	// Start a datastore transaction
 	var e model.Module
@@ -157,6 +188,10 @@ func uploadModuleFile(w http.ResponseWriter, r *http.Request) {
 		return err
 	}, nil)
 	if err != nil {
+		if err == datastore.ErrNoSuchEntity {
+			common.Serve404(w)
+			return
+		}
 		common.ServeError(c, w, err)
 		return
 	}
