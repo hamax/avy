@@ -18,7 +18,7 @@ func modulesInit(s *mux.Router) {
 	s.HandleFunc("/", newModule).Methods("POST")
 	s.HandleFunc("/{devname}/{name}/", getModule).Methods("GET")
 	s.HandleFunc("/{devname}/{name}/uploadurl", getModuleFileUploadUrl).Methods("GET")
-	s.HandleFunc("/{devname}/{name}/files", uploadModuleFile).Methods("POST")
+	s.HandleFunc("/{devname}/{name}/files/{action}", uploadModuleFile).Methods("POST")
 }
 
 func listModules(w http.ResponseWriter, r *http.Request) {
@@ -140,7 +140,7 @@ func getModuleFileUploadUrl(w http.ResponseWriter, r *http.Request) {
 	c := appengine.NewContext(r)
 	vars := mux.Vars(r)
 
-	uploadUrl, err := blobstore.UploadURL(c, "/api/modules/" + vars["devname"] + "/" + vars["name"] + "/files", nil)
+	uploadUrl, err := blobstore.UploadURL(c, "/api/modules/" + vars["devname"] + "/" + vars["name"] + "/files/upload", nil)
 	if err != nil {
 		common.ServeError(c, w, err)
 		return
@@ -186,9 +186,16 @@ func uploadModuleFile(w http.ResponseWriter, r *http.Request) {
 			return err
 		}
 
-		e.Files, err = uploadFile(c, r, e.Files)
-		if err != nil {
-			return err
+		if vars["action"] == "delete" {
+			e.Files, err = deleteFile(c, r, e.Files)
+			if err != nil {
+				return err
+			}
+		} else {
+			e.Files, err = uploadFile(c, r, e.Files)
+			if err != nil {
+				return err
+			}
 		}
 		
 		// Save the visualization object
@@ -204,5 +211,13 @@ func uploadModuleFile(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	common.WriteJson(c, w, e)
+	res := map[string]interface{}{
+		"Owner": key.Parent().StringID(),
+		"Devname": e.Devname,
+		"Name": e.Name,
+		"Date": e.Date,
+		"Files": e.Files,
+	}
+
+	common.WriteJson(c, w, res)
 }

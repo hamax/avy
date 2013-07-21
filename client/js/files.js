@@ -34,7 +34,7 @@ app.service('fileApi', function() {
 	};
 });
 
-app.controller('CodeEditorCtrl', function($scope, $routeParams, api, fileApi) {
+app.controller('CodeEditorCtrl', function($scope, $routeParams, $dialog, api, fileApi) {
 	$scope.editorOptions = {
 		lineNumbers: true,
 		lineWrapping: true,
@@ -72,6 +72,24 @@ app.controller('CodeEditorCtrl', function($scope, $routeParams, api, fileApi) {
 			$scope.$apply(function() {
 				$scope.editor = content;
 			});
+		});
+	};
+
+	$scope.deleteFile = function(file) {
+		$dialog.messageBox(
+			'Confirmation',
+			'Are you sure you want to delete ' + file.Filename + '?',
+			[{result:'no', label: 'Cancel'}, {result:'yes', label: 'Yes', cssClass: 'btn-primary'}]
+		).open().then(function(result) {
+			if (result == 'yes') {
+				file.delete(function(result) {
+					if ($scope.activeFile == file.Filename) {
+						$scope.activeFile = null;
+						$scope.editor = null;
+					}
+					$scope.update(result);
+				});
+			}
 		});
 	};
 });

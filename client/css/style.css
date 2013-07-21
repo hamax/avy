@@ -64,6 +64,20 @@ body {
 	margin: 0 20px 20px 0;
 }
 
+/* File list */
+
+.delete-icon {
+    float: right;
+    width: 30px;
+    height: 30px;
+    cursor: pointer;
+}
+
+.delete-icon i {
+    display: block;
+    margin: 8px;
+}
+
 /* CodeMirror */
 
 .CodeMirror {

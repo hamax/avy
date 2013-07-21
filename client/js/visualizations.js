@@ -39,6 +39,7 @@ app.controller('VisualizationCtrl', function($scope, $routeParams, api, fileApi)
 			var ext = data.Files[i].Filename.split('.').pop();
 			data.Files[i].ext = ext;
 			data.Files[i].url = '/visualizations/' + $scope.key + '/' + data.Files[i].Filename;
+			data.Files[i].delete = api.deleteVisualizationFile.bind(api, $scope.key, data.Files[i].Filename);
 			$scope.files[ext2grp[ext] || 0].push(data.Files[i]);
 		}
 		for (var i = 0; i < $scope.files.length; i++) {

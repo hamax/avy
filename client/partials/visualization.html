@@ -15,7 +15,12 @@
 					<div>
 						<h2>Files</h2>
 						<ul ng-repeat="fileGrp in files" class="nav nav-pills nav-stacked">
-							<li ng-repeat="file in fileGrp" ng-click="selectFile(file)" ng-class="{'active': activeFile == file.Filename}"><a href="#">{{file.Filename}}</a></li>
+							<li ng-repeat="file in fileGrp" ng-click="selectFile(file)" ng-class="{'active': activeFile == file.Filename}">
+								<div class="delete-icon" ng-click="deleteFile(file); $event.stopPropagation();">
+									<i class="icon-remove"></i>
+								</div>
+								<a href="#">{{file.Filename}}</a>
+							</li>
 						</ul>
 					</div>
 					<div ng-hide="readOnly()">

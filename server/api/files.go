@@ -43,3 +43,21 @@ func uploadFile(c appengine.Context, r *http.Request, currentFiles []model.File)
 
 	return currentFiles, nil
 }
+
+func deleteFile(c appengine.Context, r *http.Request, files []model.File) ([]model.File, error) {
+	filename := r.PostFormValue("filename")
+
+	// Find and delete the file
+	for i := range files {
+		if files[i].Filename == filename {
+			// TODO: delete the file
+			result := make([]model.File, len(files) - 1)
+			copy(result, files[:i])
+			copy(result[i:], files[i + 1:])
+			return result, nil
+		}
+	}
+
+	// TODO: error, file not found
+	return nil, nil
+}

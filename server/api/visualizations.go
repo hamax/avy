@@ -19,7 +19,7 @@ func visualizationsInit(s *mux.Router) {
 	s.HandleFunc("/{key}/", getVisualization).Methods("GET")
 	s.HandleFunc("/{key}/title", setVisualizationTitle).Methods("POST")
 	s.HandleFunc("/{key}/uploadurl", getVisualizationFileUploadUrl).Methods("GET")
-	s.HandleFunc("/{key}/files", uploadVisualizationFile).Methods("POST")
+	s.HandleFunc("/{key}/files/{action}", postVisualizationFile).Methods("POST")
 }
 
 func listVisualizations(w http.ResponseWriter, r *http.Request) {
@@ -162,7 +162,7 @@ func getVisualizationFileUploadUrl(w http.ResponseWriter, r *http.Request) {
 	c := appengine.NewContext(r)
 	vars := mux.Vars(r)
 
-	uploadUrl, err := blobstore.UploadURL(c, "/api/visualizations/" + vars["key"] + "/files", nil)
+	uploadUrl, err := blobstore.UploadURL(c, "/api/visualizations/" + vars["key"] + "/files/upload", nil)
 	if err != nil {
 		common.ServeError(c, w, err)
 		return
@@ -171,7 +171,7 @@ func getVisualizationFileUploadUrl(w http.ResponseWriter, r *http.Request) {
 	common.WriteJson(c, w, uploadUrl.Path)
 }
 
-func uploadVisualizationFile(w http.ResponseWriter, r *http.Request) {
+func postVisualizationFile(w http.ResponseWriter, r *http.Request) {
 	c := appengine.NewContext(r)
 	vars := mux.Vars(r)
 	u := user.Current(c)
@@ -203,9 +203,16 @@ func uploadVisualizationFile(w http.ResponseWriter, r *http.Request) {
 			return err
 		}
 
-		e.Files, err = uploadFile(c, r, e.Files)
-		if err != nil {
-			return err
+		if vars["action"] == "delete" {
+			e.Files, err = deleteFile(c, r, e.Files)
+			if err != nil {
+				return err
+			}
+		} else {
+			e.Files, err = uploadFile(c, r, e.Files)
+			if err != nil {
+				return err
+			}
 		}
 
 		// Save the visualization object
@@ -221,5 +228,12 @@ func uploadVisualizationFile(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	common.WriteJson(c, w, e)
+	res := map[string]interface{}{
+		"Owner": key.Parent().StringID(),
+		"Title": e.Title,
+		"Date": e.Date,
+		"Files": e.Files,
+	}
+
+	common.WriteJson(c, w, res)
 }

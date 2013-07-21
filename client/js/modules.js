@@ -41,6 +41,7 @@ app.controller('ModuleCtrl', function($scope, $routeParams, api, fileApi) {
 				var ext = $scope.files[i][j].Filename.split('.').pop();
 				$scope.files[i][j].ext = ext;
 				$scope.files[i][j].url = '/modules/' + $scope.devname + '/' + $scope.name + '/' + $scope.files[i][j].Filename;
+				$scope.files[i][j].delete = api.deleteModuleFile.bind(api, $scope.devname, $scope.name, $scope.files[i][j].Filename);
 			}
 			$scope.files[i].sort(function(a, b) {
 				if (a.Filename > b.Filename) {
