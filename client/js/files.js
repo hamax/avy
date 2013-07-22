@@ -58,11 +58,33 @@ app.controller('CodeEditorCtrl', function($scope, $routeParams, $dialog, api, fi
 			for (var i = 0; $scope.files && i < $scope.files.length; i++) {
 				if ($scope.files[i].length) {
 					$scope.selectFile($scope.files[i][0]);
-					return;
+					break;
 				}
 			}
 		}
+		if (!$scope.readme) {
+			for (var i = 0; $scope.files && i < $scope.files.length; i++) {
+				for (var j = 0; j < $scope.files[i].length; j++) {
+					if ($scope.files[i][j].Filename == "README") {
+						$scope.loadReadme($scope.files[i][j]);
+						return
+					}
+				}
+			}
+			if ($scope.selected && $scope.selected.docs) {
+				$scope.selected.code = true;
+			}
+		}
 	});
+
+	$scope.loadReadme = function(file) {
+		$scope.readme = 'loading...';
+		fileApi.getFile(file.url, function(content) {
+			$scope.$apply(function() {
+				$scope.readme = content;
+			});
+		});
+	};
 
 	$scope.selectFile = function(file) {
 		$scope.activeFile = file.Filename;
@@ -92,4 +114,14 @@ app.controller('CodeEditorCtrl', function($scope, $routeParams, $dialog, api, fi
 			}
 		});
 	};
+});
+
+app.directive('markdown', function() {
+	return {
+		link: function(scope, elm, attrs, ctrl) {
+			attrs.$observe('markdown', function(value) {
+				elm.html(markdown.toHTML(value));
+			});
+		}
+	}
 });
