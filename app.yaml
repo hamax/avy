@@ -11,8 +11,8 @@ handlers:
   static_dir: client/img
 - url: /js
   static_dir: client/js
-- url: /libs
-  static_dir: client/libs
+- url: /vendor
+  static_dir: client/vendor
 - url: /partials
   static_dir: client/partials
 # anif
