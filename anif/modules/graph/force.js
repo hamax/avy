@@ -184,8 +184,9 @@ define(['d3', 'jquery'], function(d3, $) {
 	}
 
 	force.prototype._forceTick = function() {
-		this.linkStyle.updatePosition(this.link, this.links);
-		this.nodeStyle.updatePosition(this.node, this.nodes);
+		// Update position, make sure it's without transitions
+		this.linkStyle.updatePosition(this.link, this.links, true);
+		this.nodeStyle.updatePosition(this.node, this.nodes, true);
 	};
 
 	return force;

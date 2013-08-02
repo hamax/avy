@@ -16,7 +16,7 @@ define(['d3', 'm/ziga/core/svg'], function(d3, svg) {
 		l.remove();
 	};
 
-	simple.prototype.update = function(l, links) {		
+	simple.prototype.update = function(l, links) {
 		l.style('stroke-width', function(d) {
 			return d.extra.value || 1;
 		});
@@ -38,7 +38,11 @@ define(['d3', 'm/ziga/core/svg'], function(d3, svg) {
 		}
 	};
 
-	simple.prototype.updatePosition = function(l, links) {
+	simple.prototype.updatePosition = function(l, links, noTransition) {
+		if (!noTransition) {
+			l = l.transition();
+		}
+
 		l.attr('x1', function(d) { return d.source.x; });
 		l.attr('y1', function(d) { return d.source.y; });
 		l.attr('x2', function(d) { return d.target.x; });

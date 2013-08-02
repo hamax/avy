@@ -42,7 +42,7 @@ define(['d3'], function(d3) {
 	};
 
 	simple.prototype.update = function(n, nodes) {
-		n.select('circle').style('fill', function(d) {
+		n.select('circle').transition().style('fill', function(d) {
 			if (d.extra.color) {
 				return d.extra.color
 			}
@@ -64,7 +64,11 @@ define(['d3'], function(d3) {
 		}
 	};
 
-	simple.prototype.updatePosition = function(n, nodes) {
+	simple.prototype.updatePosition = function(n, nodes, noTransition) {
+		if (!noTransition) {
+			n = n.transition();
+		}
+
 		n.attr('transform', function(d) {
 			return 'translate(' + d.x + ', ' + d.y + ')';
 		});
