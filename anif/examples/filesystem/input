@@ -1,0 +1,15 @@
+14
+pwd
+mkdir home
+cd home
+mkdir pepi
+cd pepi
+mkdir faks
+cd faks
+mkdir ars2
+cd ars2
+pwd
+cd ..
+pwd
+cd slike
+pwd

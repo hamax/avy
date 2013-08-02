@@ -1,7 +1,8 @@
 define(['d3'], function(d3) {
-	function simple(radius, text) {
+	function simple(radius, text, textOptions) {
 		// Node radius, default to 15
 		this.radius = radius || 15;
+		this.textOptions = textOptions;
 		
 		// What text to display on the node (id, none or custom)
 		if (text == undefined) {
@@ -26,10 +27,11 @@ define(['d3'], function(d3) {
 
 		var t = g.append('text');
 		t.attr('font-family', 'sans-serif');
-		t.attr('fill', 'yellow');
-		t.attr('font-size', '20px');
-		t.attr('text-anchor', 'middle');
-		t.attr('y', 5);
+		t.attr('fill', this.textOptions.color || 'yellow');
+		t.attr('font-size', this.textOptions.size || 20);
+		t.attr('text-anchor', this.textOptions.anchor || 'middle');
+		t.attr('x', this.textOptions.x || 0);
+		t.attr('y', this.textOptions.y || 5);
 
 		return g;
 	};
