@@ -2,8 +2,10 @@
 	<h1>My visualizations</h1>
 	<div class="tlist">
 		<div class="item well" ng-repeat="visualization in visualizations" ng-click="clickVisualization(visualization.Key)">
-			<div class="pull-right">{{visualization.Date|date}}</div>
-			<b>{{visualization.Title}}</b>
+			<div style="background: url('{{getPreview(visualization)}}') center no-repeat; background-size: 100%; width: 100%; height: 100%;">
+				<div class="pull-right">{{visualization.Date|date}}</div>
+				<b>{{visualization.Title}}</b>
+			</div>
 		</div>
 	</div>
 	<br style="clear: both" />

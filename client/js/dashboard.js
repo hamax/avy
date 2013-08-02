@@ -3,6 +3,10 @@ app.controller('DashboardCtrl', function($scope, $location, api) {
 		$scope.visualizations = result;
 	});
 
+	$scope.getPreview = function(visualization) {
+		return 'http://anif.' + settings.domain + settings.port + '/visualizations/' + visualization.Key + '/preview.svg';
+	};
+
 	$scope.clickVisualization = function(key) {
 		$location.path('/visualizations/' + key + '/');
 	};
