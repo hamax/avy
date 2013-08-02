@@ -1,19 +1,22 @@
 define(['d3', 'jquery'], function(d3, $) {
-	function tree(layout, nodeStyle, linkStyle) {
+	function tree(layout, nodeStyle, linkStyle, nodeSize) {
 		this.root = {};
 		this.nodes = {};
 		this.history = [];
 
 		this.tree = d3.layout.tree()
-			.size([750, 550]);
+			.nodeSize(nodeSize || [150, 150]);
 
-		layout.setHeight(600);
-		var l = layout.el.append('g').attr('transform', 'translate(25, 25)');
-		this.link = l.append('g').selectAll();
-		this.node = l.append('g').selectAll();
+		this.panel = layout.el.append('g');
+		this.link = this.panel.append('g').selectAll();
+		this.node = this.panel.append('g').selectAll();
 
+		this.layout = layout;
 		this.nodeStyle = nodeStyle;
 		this.linkStyle = linkStyle;
+
+		this.layout.onWidthChange(this._onWidthChange.bind(this));
+		this._onWidthChange();
 	}
 
 	tree.prototype.addNode = function(id, parent, extra) {
@@ -32,7 +35,7 @@ define(['d3', 'jquery'], function(d3, $) {
 		}
 
 		this.history.push(this.delNode.bind(this, id));
-	}
+	};
 
 	tree.prototype.delNode = function(id) {
 		// Find node and it's parent
@@ -48,12 +51,12 @@ define(['d3', 'jquery'], function(d3, $) {
 		}
 		parent.children.splice(parent.children.indexOf(node), 1);
 		delete this.nodes[JSON.stringify(id)];
-	}
+	};
 
 	tree.prototype.updateNode = function(id, extra) {
 		this.history.push(this.updateNode.bind(this, id, $.extend(true, {}, this.nodes[JSON.stringify(id)].extra)));
 		$.extend(true, this.nodes[JSON.stringify(id)].extra, extra);
-	}
+	};
 
 	tree.prototype.__update__ = function() {
 		var nodes = this.tree.nodes($.extend(true, {}, this.root));
@@ -76,12 +79,26 @@ define(['d3', 'jquery'], function(d3, $) {
 		this.nodeStyle.exit(this.node.exit());
 		this.nodeStyle.update(this.node, nodes);
 		this.nodeStyle.updatePosition(this.node, nodes);
-	}
+
+		// Set graph height
+		var maxY = 0;
+		for (var i = 0; i < nodes.length; i++) {
+			if (nodes[i].y > maxY) {
+				maxY = nodes[i].y;
+			}
+		}
+		this.layout.setHeight(maxY + 4 * this.nodeStyle.radius);
+	};
 
 	tree.prototype.__reverse__ = function() {
 		this.history.pop()();
 		this.history.pop();
-	}
+	};
+
+	tree.prototype._onWidthChange = function() {
+		// Center graph
+		this.panel.attr('transform', 'translate(' + (this.layout.width / 2) + ', ' + (2 * this.nodeStyle.radius) + ')');
+	};
 
 	return tree;
 });
