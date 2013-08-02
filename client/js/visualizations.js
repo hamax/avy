@@ -22,25 +22,30 @@ app.controller('VisualizationCtrl', function($scope, $routeParams, api, fileApi)
 		api.setVisualizationTitle($scope.key, $scope.data.Title);
 	};
 
-	/*
-	 * Code tab
-	 */
-
 	var ext2grp = {
 		'js': 1,
-		'avy': 2
+		'avy': 2,
+		'in': 2
 	};
 
 	$scope.update = function(data) {
 		$scope.data = data;
 
 		$scope.files = [[], [], []];
+		$scope.avys = [];
 		for (var i = 0; data.Files && i < data.Files.length; i++) {
 			var ext = data.Files[i].Filename.split('.').pop();
 			data.Files[i].ext = ext;
 			data.Files[i].url = '/visualizations/' + $scope.key + '/' + data.Files[i].Filename;
 			data.Files[i].delete = api.deleteVisualizationFile.bind(api, $scope.key, data.Files[i].Filename);
 			$scope.files[ext2grp[ext] || 0].push(data.Files[i]);
+			if (ext == 'avy') {
+				data.Files[i].basename = data.Files[i].Filename.substr(0, data.Files[i].Filename.length - ext.length - 1);
+				$scope.avys.push(data.Files[i]);
+				if (!$scope.activeAvy) {
+					$scope.activeAvy = data.Files[i].Filename;
+				}
+			}
 		}
 		for (var i = 0; i < $scope.files.length; i++) {
 			$scope.files[i].sort(function(a, b) {
@@ -53,6 +58,10 @@ app.controller('VisualizationCtrl', function($scope, $routeParams, api, fileApi)
 				return 0;
 			});
 		}
+	};
+
+	$scope.selectAvy = function(file) {
+		$scope.activeAvy = file.Filename;
 	};
 });
 
@@ -87,16 +96,31 @@ app.directive('contenteditable', function() {
 app.directive('visualizationPreview', function() {
 	return {
 		link: function(scope, elm, attrs, ctrl) {
-			elm.html('<iframe src="http://anif.' +
-				settings.domain + settings.port +
-				'/visualizations/' +
-				scope.key + '/' +
-				'#http://www.' + settings.domain + settings.port +
-				'" frameborder="0" style="width: 100%; display: none"></iframe>');
-			var iframe = $(elm).find('iframe');
+			var iframe = null, current = null;
+
+			scope.$watch('activeAvy', function() {
+				if (scope.activeAvy == current) {
+					return;
+				}
+				current = scope.activeAvy;
+
+				if (current) {
+					elm.html('<iframe src="http://anif.' +
+						settings.domain + settings.port +
+						'/visualizations/' +
+						scope.key + '/' +
+						'#' + current +
+						'&http://www.' + settings.domain + settings.port +
+						'" frameborder="0" style="width: 100%; display: none"></iframe>');
+					iframe = $(elm).find('iframe');
+				} else {
+					elm.html('');
+					iframe = null;
+				}
+			});
 
 			window.addEventListener('message', function(event) {
-				if (event.origin == 'http://anif.' + settings.domain + settings.port && event.data.type == 'resize') {
+				if (event.origin == 'http://anif.' + settings.domain + settings.port && event.data.type == 'resize' && iframe) {
 					iframe.height(event.data.height);
 					iframe.css('display', 'block');
 				}

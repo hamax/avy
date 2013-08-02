@@ -31,7 +31,18 @@
 			</div>
 		</tab>
 		<tab heading="Preview">
-			<div visualization-preview></div>
+			<div class="row-fluid" ng-controller="CodeEditorCtrl">
+				<div class="span10">
+					<div visualization-preview></div>
+				</div>
+				<div class="span2 well">
+					<ul class="nav nav-pills nav-stacked">
+						<li ng-repeat="file in avys" ng-click="selectAvy(file)" ng-class="{'active': activeAvy == file.Filename}">
+							<a href="#">{{file.basename}}</a>
+						</li>
+					</ul>
+				</div>
+			</div>
 		</tab>
 	</tabset>
 </div>

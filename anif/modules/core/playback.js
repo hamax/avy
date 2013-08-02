@@ -5,7 +5,8 @@ define(['jquery-ui'], function($) {
 
 	playback.prototype.load = function(v) {
 		this.v = v;
-		d3.xhr('0.avy', 'text/plain', function(r) {
+		var filename = window.location.hash.substr(1).split('&')[0];
+		d3.xhr(filename, 'text/plain', function(r) {
 			// Parse avy file into this.steps
 			var lines = r.response.replace('\r\n', '\n').trim().split('\n'), index = 0;
 			this.steps = [[]];

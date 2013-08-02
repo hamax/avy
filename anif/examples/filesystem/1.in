@@ -1,4 +1,4 @@
-14
+19
 pwd
 mkdir home
 cd home
@@ -12,4 +12,9 @@ pwd
 cd ..
 pwd
 cd slike
+pwd
+mkdir slike
+cd slike
+mkdir vrsar_2013
+cd vrsar_2013
 pwd
