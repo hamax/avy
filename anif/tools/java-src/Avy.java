@@ -27,10 +27,14 @@ public class Avy {
 		}
 		
 		StringBuffer sb = new StringBuffer(name);
-		for (Object obj : args) {
-			sb.append(' ');
-			sb.append(gson.toJson(obj));
+		sb.append("(");
+		for (int i = 0; i < args.length; i++) {
+			if (i > 0) {
+				sb.append(", ");
+			}
+			sb.append(gson.toJson(args[i]));
 		}
+		sb.append(")");
 		file.println(sb.toString());
 	}
 	
