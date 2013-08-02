@@ -2,7 +2,7 @@ define(['d3'], function(d3) {
 	function simple(radius, text, textOptions) {
 		// Node radius, default to 15
 		this.radius = radius || 15;
-		this.textOptions = textOptions;
+		this.textOptions = textOptions || {};
 		
 		// What text to display on the node (id, none or custom)
 		if (text == undefined) {
