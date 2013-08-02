@@ -49,6 +49,8 @@ int main() {
 		int result[201];
 		memset(result, -1, sizeof result);
 		map<vector<int>, bool> visited;
+		map<vector<int>, int> best;
+		best[q] = 0;
 
 		AVY(graph.addNode, P(q))
 		while (!queue.empty()) {
@@ -81,9 +83,11 @@ int main() {
 							n.cost += amount;
 							n.q[source] -= amount;
 							n.q[target] += amount;
-							queue.push(n);
-
-							AVY(graph.addLink, P(s.q), P(n.q))
+							if (best.find(n.q) == best.end() || n.cost < best[n.q]) {
+								best[n.q] = n.cost;
+								queue.push(n);
+								AVY(graph.addNode, P(n.q), P(s.q))
+							}
 						}
 					}
 				}
