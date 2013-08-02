@@ -1,10 +1,21 @@
-define(['d3', 'jquery'], function(d3, $) {
+define(['d3', 'jquery-ui'], function(d3, $) {
 	// Base SVG class
 	function svg() {
-		this.el = d3.select('body').append('svg');
-		this.el.attr('width', '100%');
+		this.el = d3.select('svg');
 		$(window).resize(this._resize.bind(this));
 		this.layout = new layout(this.el, $(window).width(), this);
+
+		// Controls
+		$('.controls .save').button({
+			icons: {
+				primary: 'ui-icon-disk'
+			},
+			text: false
+		}).click(this._saveClick.bind(this));
+
+		// Show controls
+		$('.controls').css('display', 'block');
+		$('.controls .save').css('display', 'block');
 	}
 
 	svg.prototype._resize = function() {
@@ -14,8 +25,19 @@ define(['d3', 'jquery'], function(d3, $) {
 	svg.prototype._updateHeight = function() {
 		this.el.attr('height', this.layout.height);
 		if (window.top != window.self && window.location.hash) {
-			window.top.postMessage({'type': 'resize', 'height': $(document).height()}, window.location.hash.substr(1));
+			window.top.postMessage({'type': 'resize', 'height': $('body').height()}, window.location.hash.substr(1));
 		}
+	};
+
+	svg.prototype._saveClick = function() {
+		// Get svg
+		this.el.attr('width', $('svg').width());
+		var svg = $('.svg').html();
+		this.el.attr('width', '100%');
+		// Base64 encode it and generate data url
+		var b64url = 'data:image/svg+xml;base64,' + btoa(svg);
+		// Save it
+		$('<a href="' + b64url + '" download="visualization.svg"></a>')[0].click();
 	};
 
 	// Layout class

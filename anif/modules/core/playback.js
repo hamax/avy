@@ -25,7 +25,7 @@ define(['jquery-ui'], function($) {
 			this.step = -1;
 
 			// Init buttons and slider
-			$('.playback .play, .playback .pause').button({
+			$('.playback .play').button({
 				icons: {
 					primary: 'ui-icon-pause'
 				},
@@ -43,6 +43,10 @@ define(['jquery-ui'], function($) {
 			if (this.play) {
 				this.interval = setInterval(this._interval.bind(this), 2000);
 			}
+
+			// Show controls
+			$('.controls').css('display', 'block');
+			$('.playback').css('display', 'block');
 		}.bind(this));
 	};
 
