@@ -40,6 +40,10 @@ char* avy_package(int a) {
 	return avy_printf("%d", a);
 }
 
+char* avy_package(const char *a) {
+	return avy_printf("%s", a);
+}
+
 char* avy_package_map(const char *key, char *val) {
 	char *r = avy_printf("{\"%s\":\"%s\"}", key, val);
 	free(val);
