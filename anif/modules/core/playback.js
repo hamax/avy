@@ -42,7 +42,7 @@ define(['jquery-ui'], function($) {
 			// Call _interval() once to advance to step 0, and if autoplay is enabled, set interval
 			this._interval();
 			if (this.play) {
-				this.interval = setInterval(this._interval.bind(this), 2000);
+				this.interval = setInterval(this._interval.bind(this), 1000);
 			}
 
 			// Show controls
@@ -103,7 +103,7 @@ define(['jquery-ui'], function($) {
 			clearInterval(this.interval);
 			$('.playback .ui-button-icon-primary').toggleClass('ui-icon-pause ui-icon-play');
 		} else {
-			this.interval = setInterval(this._interval.bind(this), 2000);
+			this.interval = setInterval(this._interval.bind(this), 1000);
 			$('.playback .ui-button-icon-primary').toggleClass('ui-icon-play ui-icon-pause');
 		}
 		this.play = !this.play;
