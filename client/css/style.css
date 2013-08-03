@@ -55,6 +55,24 @@ body {
     color: #51a351;
 }
 
+/* Help */
+
+.help h1 {
+    border-bottom: 1px solid #aaa;
+}
+
+.help h2 {
+    font-weight: normal;
+}
+
+.help p {
+    font-size: 16px;
+}
+
+.help .tab-content {
+    border-bottom: 1px solid #ddd;
+}
+
 /* Visualization list */
 
 .tlist .item {

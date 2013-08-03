@@ -1,0 +1,103 @@
+<div class="container-fluid help">
+	<h1>Getting started</h1>
+	<br/>
+
+	<h2>1. Implementing your algorithm</h2>
+	<p>Implement your algorithm in your favorite programming language, just like you would normally.</p>
+	<br/>
+
+	<h2>2. Capturing events important for your visualization</h2>
+	<p>Next step is to capture events that will drive your visualization. You can use one of our libraries (C/C++, Python, Java), or do it manually.</p>
+	<tabset>
+		<tab heading="C/C++">
+			AVY(command, P(param1), P(param2), ...);<br>
+			<br>
+			<b>Example:</b><br>
+<pre class="prettyprint">
+AVY(start); // Start a new avy file
+List&lt;int&gt; list;
+for (int i = 0; i &lt; 10; i++) {
+    AVY(step); // Step in the animation
+    list.push_back(i);
+    AVY(list.add, P(i)); // Tell avy that we added i to the list
+}
+</pre>
+		</tab>
+		<tab heading="Python">
+			avy('command', param1, param2, ...)<br>
+			<br>
+			<b>Example:</b><br>
+<pre class="prettyprint">
+avy('start') # Start a new avy file
+list = []
+for i in range(10):
+    avy('step') # Step in the animation
+    list.append(i)
+    avy('list.add', i) # Tell avy that we added i to the list
+</pre>
+		</tab>
+		<tab heading="Java">
+			Avy.cmd("command", param1, param2, ...);<br>
+			<br>
+			<b>Example:</b><br>
+<pre class="prettyprint">
+Avy.cmd("start"); // Start a new avy file
+ArrayList&lt;Integer&gt; list = new ArrayList&lt;Integer&gt;();
+for (int i = 0; i &lt; 10; i++) {
+    Avy.cmd("step"); // Step in the animation
+    list.add(i);
+    Avy.cmd("list.add", i); // Tell avy that we added i to the list
+}
+Avy.close(); // Make sure all files are closed correctly
+</pre>
+		</tab>
+		<tab heading="Manually">
+			avy_file = open('0.avy')<br>
+			avy_file.write('command(jsonParam1, jsonParam2, ...)\n')<br>
+			<br>
+			<b>Example:</b><br>
+<pre class="prettyprint">
+avy_file = open('0.avy') // Start a new avy file
+list = []
+for i in range(10):
+    avy_file.write('step\n') # Step in the animation
+    list.append(i)
+    avy_file.write('list.add(%d)\n' % i) # Tell avy that we added i to the list
+</pre>
+		</tab>
+	</tabset>
+	<br/>
+
+	<h2>3. Creating your visualization</h2>
+	<p>Next we need to make a simple (but powerful) Javascript file called "avy.js". You can think of it as a configuration file.</p>
+	<b>Example:</b><br/>
+<pre class="prettyprint">
+// Load required modules (core, list, node)
+define(['m/ziga/core/playback', 'm/ziga/core/svg', 'm/ziga/list/list', 'm/ziga/node/simple'],
+		function(playback, svg, list, node) {
+	// Define modules that will be handling calls from dot avy files
+	// In this case we need a list that will handle list.add
+	// We could also implement that function directly in this file
+	var v = {
+		// List needs a svg layer (pass the main one or create a sublayer with svg.add())
+		// and a node style (handles drawing of the nodes in the list)
+		list: new list(svg, new node())
+	};
+
+	// Start playback of our dot avy files
+	playback.load(v);
+});
+</pre>
+	<p>And now for our final step we need to create a new visualization here on algoviz.net in your dashboard and upload our files (we only need to upload dot avy and avy.js, but it is nice to also include your algorithm code and input files that you used to generate dot avy files).</p>
+	<br/>
+
+	<h2>Complete examples</h2>
+	<ul>
+		<li><a href="/visualizations/ag1zfmF2eS1wcm9qZWN0cjYLEgdhY2NvdW50IhUxMDM3ODgyMzc1NzY2NDI2NjY2NjYMCxINdmlzdWFsaXphdGlvbhiJJww/">Getting started example</a></li>
+		<li>C++: <a href="/visualizations/ag1zfmF2eS1wcm9qZWN0cjYLEgdhY2NvdW50IhUxMDM3ODgyMzc1NzY2NDI2NjY2NjYMCxINdmlzdWFsaXphdGlvbhjRDww/">Topological sorting</a>, <a href="/visualizations/ag1zfmF2eS1wcm9qZWN0cjYLEgdhY2NvdW50IhUxMDM3ODgyMzc1NzY2NDI2NjY2NjYMCxINdmlzdWFsaXphdGlvbhihHww/">BFS and DFS</a>, <a href="/visualizations/ag1zfmF2eS1wcm9qZWN0cjULEgdhY2NvdW50IhUxMDM3ODgyMzc1NzY2NDI2NjY2NjYMCxINdmlzdWFsaXphdGlvbhgBDA/">Dijkstra</a></li>
+		<li>Python: <a href="/visualizations/ag1zfmF2eS1wcm9qZWN0cjYLEgdhY2NvdW50IhUxMDM3ODgyMzc1NzY2NDI2NjY2NjYMCxINdmlzdWFsaXphdGlvbhjpBww/">Dijkstra</a></li>
+		<li>Java: <a href="/visualizations/ag1zfmF2eS1wcm9qZWN0cjYLEgdhY2NvdW50IhUxMDM3ODgyMzc1NzY2NDI2NjY2NjYMCxINdmlzdWFsaXphdGlvbhi5Fww/">Tree</a></li>
+	</ul>
+	<br/>
+</div>
+<script src="https://google-code-prettify.googlecode.com/svn/loader/run_prettify.js"></script>

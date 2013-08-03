@@ -3,7 +3,8 @@ var app = angular.module('avy', ['ui.bootstrap', 'ui.codemirror']);
 app.config(function($routeProvider, $locationProvider) {
 	$routeProvider
 		.when('/', {templateUrl: '/partials/homepage.html', controller: 'HomepageCtrl'})
-		.when('/dashboard', {templateUrl: '/partials/dashboard.html', controller: 'DashboardCtrl'})
+		.when('/dashboard/', {templateUrl: '/partials/dashboard.html', controller: 'DashboardCtrl'})
+		.when('/help/', {templateUrl: '/partials/help.html'})
 		.when('/visualizations/', {templateUrl: '/partials/visualizations.html', controller: 'VisualizationsCtrl'})
 		.when('/visualizations/:key/', {templateUrl: '/partials/visualization.html', controller: 'VisualizationCtrl'})
 		.when('/modules/', {templateUrl: '/partials/modules.html', controller: 'ModulesCtrl'})
