@@ -15,11 +15,11 @@
 			<b>Example:</b><br>
 <pre class="prettyprint">
 AVY(start); // Start a new avy file
-List&lt;int&gt; list;
+vector&lt;int&gt; list;
 for (int i = 0; i &lt; 10; i++) {
-    AVY(step); // Step in the animation
-    list.push_back(i);
-    AVY(list.add, P(i)); // Tell avy that we added i to the list
+	AVY(step); // Step in the animation
+	list.push_back(i);
+	AVY(list.add, P(i)); // Tell avy that we added i to the list
 }
 </pre>
 		</tab>
@@ -31,9 +31,9 @@ for (int i = 0; i &lt; 10; i++) {
 avy('start') # Start a new avy file
 list = []
 for i in range(10):
-    avy('step') # Step in the animation
-    list.append(i)
-    avy('list.add', i) # Tell avy that we added i to the list
+	avy('step') # Step in the animation
+	list.append(i)
+	avy('list.add', i) # Tell avy that we added i to the list
 </pre>
 		</tab>
 		<tab heading="Java">
@@ -44,25 +44,25 @@ for i in range(10):
 Avy.cmd("start"); // Start a new avy file
 ArrayList&lt;Integer&gt; list = new ArrayList&lt;Integer&gt;();
 for (int i = 0; i &lt; 10; i++) {
-    Avy.cmd("step"); // Step in the animation
-    list.add(i);
-    Avy.cmd("list.add", i); // Tell avy that we added i to the list
+	Avy.cmd("step"); // Step in the animation
+	list.add(i);
+	Avy.cmd("list.add", i); // Tell avy that we added i to the list
 }
 Avy.close(); // Make sure all files are closed correctly
 </pre>
 		</tab>
 		<tab heading="Manually">
-			avy_file = open('0.avy')<br>
+			avy_file = open('0.avy', 'w')<br>
 			avy_file.write('command(jsonParam1, jsonParam2, ...)\n')<br>
 			<br>
 			<b>Example:</b><br>
 <pre class="prettyprint">
-avy_file = open('0.avy') // Start a new avy file
+avy_file = open('0.avy', 'w') # Start a new avy file
 list = []
 for i in range(10):
-    avy_file.write('step\n') # Step in the animation
-    list.append(i)
-    avy_file.write('list.add(%d)\n' % i) # Tell avy that we added i to the list
+	avy_file.write('step()\n') # Step in the animation
+	list.append(i)
+	avy_file.write('list.add(%d)\n' % i) # Tell avy that we added i to the list
 </pre>
 		</tab>
 	</tabset>
