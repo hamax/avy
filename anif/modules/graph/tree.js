@@ -28,7 +28,7 @@ define(['d3', 'jquery'], function(d3, $) {
 		};
 
 		this.nodes[JSON.stringify(id)] = node;
-		if (parent) {
+		if (parent != null) {
 			this.nodes[JSON.stringify(parent)].children.push(node);
 		} else {
 			this.root = node;
@@ -57,6 +57,21 @@ define(['d3', 'jquery'], function(d3, $) {
 		this.history.push(this.updateNode.bind(this, id, $.extend(true, {}, this.nodes[JSON.stringify(id)].extra)));
 		$.extend(true, this.nodes[JSON.stringify(id)].extra, extra);
 	};
+
+	tree.prototype.reparentNode = function(id, newParentId) {
+		// Find node and it's parent
+		var node = this.nodes[JSON.stringify(id)];
+		var parent = this.nodes[node.parentId];
+		var newParent = this.nodes[JSON.stringify(newParentId)];
+
+		// Push to history
+		this.history.push(this.reparentNode.bind(this, id, node.parentId));
+
+		// Reparent node
+		parent.children.splice(parent.children.indexOf(node), 1);
+		newParent.children.push(node);
+		node.parentId = JSON.stringify(newParentId);
+	}
 
 	tree.prototype.__update__ = function() {
 		var nodes = this.tree.nodes($.extend(true, {}, this.root));
