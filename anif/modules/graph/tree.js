@@ -65,7 +65,7 @@ define(['d3', 'jquery'], function(d3, $) {
 		var newParent = this.nodes[JSON.stringify(newParentId)];
 
 		// Push to history
-		this.history.push(this.reparentNode.bind(this, id, node.parentId));
+		this.history.push(this.reparentNode.bind(this, id, JSON.parse(node.parentId)));
 
 		// Reparent node
 		parent.children.splice(parent.children.indexOf(node), 1);
