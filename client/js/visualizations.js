@@ -14,6 +14,7 @@ app.controller('VisualizationsCtrl', function($scope, $location, api) {
 
 app.controller('VisualizationCtrl', function($scope, $routeParams, api, fileApi) {
 	$scope.key = $routeParams.key;
+	$scope.selected = {preview: true, code: false};
 	api.getVisualization($scope.key, function(result) {
 		$scope.update(result);
 	});

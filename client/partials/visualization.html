@@ -1,4 +1,4 @@
-<div class="container-fluid">
+<div class="container-fluid" ng-controller="CodeEditorCtrl">
 	<div ng-hide="readOnly()">
 		<h1 contenteditable change="saveTitle()" ng-model="data.Title"></h1>
 	</div>
@@ -6,10 +6,24 @@
 		<h1>{{data.Title}}</h1>
 	</div>
 	<tabset>
-		<tab heading="Code">
+		<tab heading="Preview" disabled="!avyjs" active="selected.preview">
 			<div class="row-fluid" ng-controller="CodeEditorCtrl">
+				<div class="span10">
+					<div visualization-preview></div>
+				</div>
+				<div class="span2 well">
+					<ul class="nav nav-pills nav-stacked">
+						<li ng-repeat="file in avys" ng-click="selectAvy(file)" ng-class="{'active': activeAvy == file.Filename}">
+							<a href="#">{{file.basename}}</a>
+						</li>
+					</ul>
+				</div>
+			</div>
+		</tab>
+		<tab heading="Code" select="editorRefresh = 1" active="selected.code">
+			<div class="row-fluid">
 				<div class="span8">
-					<textarea ui-codemirror="editorOptions" ng-model="editor" mode="editorMode"></textarea>
+					<textarea ui-codemirror="editorOptions" ui-refresh="editorRefresh" ng-model="editor" mode="editorMode"></textarea>
 				</div>
 				<div class="span4 well">
 					<div>
@@ -27,20 +41,6 @@
 						<h3>Upload</h3>
 						<div ng-file-upload="/api/visualizations/{{key}}/uploadurl"></div>
 					</div>
-				</div>
-			</div>
-		</tab>
-		<tab heading="Preview">
-			<div class="row-fluid" ng-controller="CodeEditorCtrl">
-				<div class="span10">
-					<div visualization-preview></div>
-				</div>
-				<div class="span2 well">
-					<ul class="nav nav-pills nav-stacked">
-						<li ng-repeat="file in avys" ng-click="selectAvy(file)" ng-class="{'active': activeAvy == file.Filename}">
-							<a href="#">{{file.basename}}</a>
-						</li>
-					</ul>
 				</div>
 			</div>
 		</tab>

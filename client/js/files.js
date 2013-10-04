@@ -67,11 +67,26 @@ app.controller('CodeEditorCtrl', function($scope, $routeParams, $dialog, api, fi
 				for (var j = 0; j < $scope.files[i].length; j++) {
 					if ($scope.files[i][j].Filename == "README") {
 						$scope.loadReadme($scope.files[i][j]);
-						return
+						break;
 					}
 				}
+				if ($scope.readme) break;
 			}
-			if ($scope.selected && $scope.selected.docs) {
+			if ($scope.selected && !$scope.readme && $scope.selected.docs) {
+				$scope.selected.code = true;
+			}
+		}
+		if (!$scope.avyjs) {
+			for (var i = 0; $scope.files && i < $scope.files.length; i++) {
+				for (var j = 0; j < $scope.files[i].length; j++) {
+					if ($scope.files[i][j].Filename == "avy.js") {
+						$scope.avyjs = true;
+						break;
+					}
+				}
+				if ($scope.avyjs) break;
+			}
+			if ($scope.selected && !$scope.avyjs && $scope.selected.preview) {
 				$scope.selected.code = true;
 			}
 		}
