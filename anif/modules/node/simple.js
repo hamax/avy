@@ -39,10 +39,16 @@ define(['d3'], function(d3) {
 
 	simple.prototype.enter = function(n) {
 		var g = n.append('g');
+		// Set position so we don't get transition from 0, 0
+		g.attr('transform', function(d) {
+			return 'translate(' + d.x + ', ' + d.y + ')';
+		});
 		
 		var c = g.append('circle');
 		c.attr('class', 'node');
 		c.attr('r', this.radius);
+		// Set initial opacity to 0 and then transition to 1
+		c.style('fill-opacity', '0.0');
 
 		var t = g.append('text');
 		t.attr('font-family', 'sans-serif');
@@ -69,6 +75,9 @@ define(['d3'], function(d3) {
 				return '#ff0000';
 			}
 			return '#0000ff';
+		})
+		.style('fill-opacity', function(d) {
+			return '1.0';
 		});
 
 		if (this.textFunc) {
