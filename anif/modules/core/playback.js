@@ -73,7 +73,7 @@ define(['jquery-ui'], function($) {
 		}.bind(this));
 	};
 
-	playback.prototype._interval = function(manualSlider) {
+	playback.prototype._interval = function(manualSlider, disableUpdate) {
 		// Move for one step
 		this.step++;
 		if (this.step >= this.steps.length) {
@@ -97,17 +97,19 @@ define(['jquery-ui'], function($) {
 		}
 		
 		// Call __update__ method on all top level modules
-		for (var k in this.v) {
-			try {
-				this.v[k].__update__();
-			} catch(err) {
-				this._handleModuleException(k, err);
-				return;
+		if (!disableUpdate) {
+			for (var k in this.v) {
+				try {
+					this.v[k].__update__();
+				} catch(err) {
+					this._handleModuleException(k, err);
+					return;
+				}
 			}
 		}
 	};
 
-	playback.prototype._reverse = function() {
+	playback.prototype._reverse = function(disableUpdate) {
 		// Reverse story actions for this step
 		for (var i = this.steps[this.step].length - 1; i >= 0; i--) {
 			var module = this.steps[this.step][i].split('.')[0];
@@ -120,12 +122,14 @@ define(['jquery-ui'], function($) {
 		}
 
 		// Call __update__ method on all top level modules
-		for (var k in this.v) {
-			try {
-				this.v[k].__update__();
-			} catch(err) {
-				this._handleModuleException(k, err);
-				return;
+		if (!disableUpdate) {
+			for (var k in this.v) {
+				try {
+					this.v[k].__update__();
+				} catch(err) {
+					this._handleModuleException(k, err);
+					return;
+				}
 			}
 		}
 
@@ -154,19 +158,29 @@ define(['jquery-ui'], function($) {
 
 		// Fast forward
 		while (target > this.step && !this.broken) {
-			this._interval();
+			this._interval(undefined, true);
 		}
 
 		// Reverse
 		while (target < this.step && !this.broken) {
-			this._reverse();
+			this._reverse(true);
+		}
+
+		// Call __update__ method on all top level modules
+		for (var k in this.v) {
+			try {
+				this.v[k].__update__();
+			} catch(err) {
+				this._handleModuleException(k, err);
+				return;
+			}
 		}
 	};
 
 	playback.prototype._handleModuleException = function(module, err) {
 		// Set status to broken
 		this.broken = true;
-		
+
 		// Stop everything
 		if (this.play) {
 			clearInterval(this.interval);
