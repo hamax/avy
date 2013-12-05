@@ -11,12 +11,14 @@ client: Website client-side application (AngularJS)
  - partials: HTML (AngularJS) templates
  - vendor: 3rd party libraries
  - index.html: template for the website index
+
 server: AppEngine server application
  - api: API for the website (www.algoviz.net)
  - anif: visualization and module hosting (anif.algoviz.net)
  - common: common functions
  - model: data structures for storing in the database
  - server.go: main server file
+
 anif: Animation framework
  - framework: basic framework files (libraries and api.html for iframe file access API)
  - tools: algorithm event capturing tools in various programming languages
