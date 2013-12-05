@@ -43,7 +43,7 @@ define(['d3', 'jquery'], function(d3, $) {
 		// Check if it already exists
 		var index = this._nodeIndex(JSON.stringify(id));
 		if (index != -1) {
-			return "Node already exists.";
+			throw "Node already exists.";
 		}
 		// Add to the node list, won't be created until update call
 		this.nodes.push({id: JSON.stringify(id), extra: extra || {}});
@@ -56,7 +56,7 @@ define(['d3', 'jquery'], function(d3, $) {
 
 		var index = this._nodeIndex(idJson);
 		if (index == -1) {
-			return "Node doesn't exist."
+			throw "Node doesn't exist."
 		}
 
 		// Delete broken links
@@ -78,7 +78,7 @@ define(['d3', 'jquery'], function(d3, $) {
 	force.prototype.updateNode = function(id, extra, replace) {
 		var index = this._nodeIndex(JSON.stringify(id));
 		if (index == -1) {
-			return "Node doesn't exist."
+			throw "Node doesn't exist."
 		}
 
 		this.history.push([this.updateNode.bind(this, id, $.extend(true, {}, this.nodes[index].extra), true)]);
@@ -96,19 +96,13 @@ define(['d3', 'jquery'], function(d3, $) {
 		var sourceIndex = this._nodeIndex(JSON.stringify(source));
 		if (sourceIndex == -1) {
 			sourceIndex = this.nodes.length;
-			var r = this.addNode(source);
-			if (r) {
-				return r;
-			}
+			this.addNode(source);
 			h = h.concat(this.history.pop());
 		}
 		var targetIndex = this._nodeIndex(JSON.stringify(target));
 		if (targetIndex == -1) {
 			targetIndex = this.nodes.length;
-			var r = this.addNode(target);
-			if (r) {
-				return r;
-			}
+			this.addNode(target);
 			h = h.concat(this.history.pop());
 		}
 
@@ -129,7 +123,7 @@ define(['d3', 'jquery'], function(d3, $) {
 	force.prototype.delLink = function(source, target) {
 		var index = this._linkIndex(JSON.stringify(source), JSON.stringify(target));
 		if (index == -1) {
-			return "Link doesn't exist.";
+			throw "Link doesn't exist.";
 		}
 
 		this.history.push([this.addLink.bind(this, source, target, $.extend(true, {}, this.links[index].extra))]);
@@ -139,7 +133,7 @@ define(['d3', 'jquery'], function(d3, $) {
 	force.prototype.updateLink = function(source, target, extra, replace) {
 		var index = this._linkIndex(JSON.stringify(source), JSON.stringify(target));
 		if (index == -1) {
-			return "Link doesn't exist."
+			throw "Link doesn't exist."
 		}
 
 		this.history.push([this.updateLink.bind(this, source, target, $.extend(true, {}, this.links[index].extra, true))]);
@@ -172,10 +166,7 @@ define(['d3', 'jquery'], function(d3, $) {
 	force.prototype.__reverse__ = function() {
 		var h = this.history.pop();
 		for (var i = h.length - 1; i >= 0; i--) {
-			var r = h[i]();
-			if (r) {
-				return r;
-			}
+			h[i]();
 			this.history.pop();
 		}
 	};

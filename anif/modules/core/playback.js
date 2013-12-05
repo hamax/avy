@@ -58,9 +58,12 @@ define(['jquery-ui'], function($) {
 				slide: this._sliderChange.bind(this)
 			});
 
+			// If there was an exception
+			this.broken = false;
+
 			// Call _interval() once to advance to step 0, and if autoplay is enabled, set interval
 			this._interval();
-			if (this.play) {
+			if (this.play && !this.broken) {
 				this.interval = setInterval(this._interval.bind(this), 1000);
 			}
 
@@ -85,15 +88,22 @@ define(['jquery-ui'], function($) {
 
 		// Execute story actions
 		for (var i = 0; i < this.steps[this.step].length; i++) {
-			var r = eval('this.v.' + this.steps[this.step][i] + ';');
-			if (r) {
-				alert(r);
+			try {
+				eval('this.v.' + this.steps[this.step][i] + ';');
+			} catch(err) {
+				this._handleModuleException(this.steps[this.step][i].split('.')[0], err);
+				return;
 			}
 		}
 		
 		// Call __update__ method on all top level modules
 		for (var k in this.v) {
-			this.v[k].__update__();
+			try {
+				this.v[k].__update__();
+			} catch(err) {
+				this._handleModuleException(k, err);
+				return;
+			}
 		}
 	};
 
@@ -101,15 +111,22 @@ define(['jquery-ui'], function($) {
 		// Reverse story actions for this step
 		for (var i = this.steps[this.step].length - 1; i >= 0; i--) {
 			var module = this.steps[this.step][i].split('.')[0];
-			var r = this.v[module].__reverse__();
-			if (r) {
-				alert(r);
+			try {
+				this.v[module].__reverse__();
+			} catch(err) {
+				this._handleModuleException(module, err);
+				return;
 			}
 		}
 
 		// Call __update__ method on all top level modules
 		for (var k in this.v) {
-			this.v[k].__update__();
+			try {
+				this.v[k].__update__();
+			} catch(err) {
+				this._handleModuleException(k, err);
+				return;
+			}
 		}
 
 		// Move to previous step
@@ -136,15 +153,36 @@ define(['jquery-ui'], function($) {
 		}
 
 		// Fast forward
-		while (target > this.step) {
+		while (target > this.step && !this.broken) {
 			this._interval();
 		}
 
 		// Reverse
-		while (target < this.step) {
+		while (target < this.step && !this.broken) {
 			this._reverse();
 		}
 	};
+
+	playback.prototype._handleModuleException = function(module, err) {
+		// Set status to broken
+		this.broken = true;
+		
+		// Stop everything
+		if (this.play) {
+			clearInterval(this.interval);
+		}
+
+		// Hide controls
+		$('.controls').css('display', 'none');
+		$('.playback').css('display', 'none');
+
+		// Display error
+		if (module) {
+			alert('Exception in module ' + module + ': ' + err);
+		} else {
+			alert('Exception: ' + err);
+		}
+	}
 
 	return new playback();
 });

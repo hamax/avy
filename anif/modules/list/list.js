@@ -45,7 +45,7 @@ define(['d3', 'jquery'], function(d3, $) {
 
 	list.prototype.pop = function() {
 		if (!this.nodes.length) {
-			return "List is empty."
+			throw "List is empty."
 		}
 
 		var index = this.nodes.length - 1;
@@ -56,7 +56,7 @@ define(['d3', 'jquery'], function(d3, $) {
 	list.prototype.update = function(id, extra, replace) {
 		var index = this._nodeIndex(JSON.stringify(id));
 		if (index == -1) {
-			return "Element doesn't exist."
+			throw "Element doesn't exist."
 		}
 
 		this.history.push(this.update.bind(this, id, $.extend(true, {}, this.nodes[index].extra, true)));
