@@ -21,10 +21,12 @@ func Init(s *mux.Router) {
 	s.HandleFunc("/{path:.*}", anif404)
 }
 
+// Serve a 404 error - file not found
 func anif404(w http.ResponseWriter, r *http.Request) {
 	common.Serve404(w)
 }
 
+// Get index file (html) for a visualization
 func getVisualizationIndex(w http.ResponseWriter, r *http.Request) {
 	c := appengine.NewContext(r)
 	vars := mux.Vars(r)
@@ -63,6 +65,7 @@ func getVisualizationIndex(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
+// Get a file that is part of a visualization
 func getVisualizationFile(w http.ResponseWriter, r *http.Request) {
 	c := appengine.NewContext(r)
 	vars := mux.Vars(r)
@@ -97,6 +100,7 @@ func getVisualizationFile(w http.ResponseWriter, r *http.Request) {
 	common.Serve404(w)
 }
 
+// Get a file that is part of a module
 func getModuleFile(w http.ResponseWriter, r *http.Request) {
 	c := appengine.NewContext(r)
 	vars := mux.Vars(r)

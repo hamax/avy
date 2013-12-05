@@ -47,7 +47,7 @@ func init() {
 	api.Init(www.PathPrefix("/api/").Subrouter()) // Api handles
 	www.HandleFunc("/login", loginHandle)
 	www.HandleFunc("/logout", logoutHandle)
-	www.HandleFunc("/{path:.*}", root) // Anything else goes to angularjs
+	www.HandleFunc("/{path:.*}", root) // Anything else goes to AngularJS
 
 	// Register handles for anif subdomain
 	anif.Init(r.Host("anif." + domain).Subrouter())
@@ -55,11 +55,13 @@ func init() {
 	http.Handle("/", r)
 }
 
+// Redirects to the main www domain (keeps the path)
 func redirect(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	http.Redirect(w, r, "http://www." + domain + port + "/" + vars["path"], http.StatusFound)
 }
 
+// Serves the AngularJS application
 func root(w http.ResponseWriter, r *http.Request) {
 	c := appengine.NewContext(r)
 
@@ -74,6 +76,7 @@ func root(w http.ResponseWriter, r *http.Request) {
 	templates.ExecuteTemplate(w, "index", IndexData{u, acc, domain, port})
 }
 
+// Login using Google account
 func loginHandle(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "text/html")
 

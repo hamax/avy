@@ -21,6 +21,7 @@ func modulesInit(s *mux.Router) {
 	s.HandleFunc("/{devname}/{name}/files/{action}", uploadModuleFile).Methods("POST")
 }
 
+// Get a list of modules
 func listModules(w http.ResponseWriter, r *http.Request) {
 	c := appengine.NewContext(r)
 
@@ -55,6 +56,7 @@ func listModules(w http.ResponseWriter, r *http.Request) {
 	common.WriteJson(c, w, output)
 }
 
+// Create a new module
 func newModule(w http.ResponseWriter, r *http.Request) {
 	c := appengine.NewContext(r)
 	u := user.Current(c)
@@ -99,6 +101,7 @@ func newModule(w http.ResponseWriter, r *http.Request) {
 	common.WriteJson(c, w, map[string]string{"Devname": devname, "Name": name})
 }
 
+// Get details about a module
 func getModule(w http.ResponseWriter, r *http.Request) {
 	c := appengine.NewContext(r)
 	vars := mux.Vars(r)
@@ -136,6 +139,7 @@ func getModule(w http.ResponseWriter, r *http.Request) {
 	common.WriteJson(c, w, res)
 }
 
+// Get an URL for uploading a file to a module
 func getModuleFileUploadUrl(w http.ResponseWriter, r *http.Request) {
 	c := appengine.NewContext(r)
 	vars := mux.Vars(r)
@@ -149,6 +153,7 @@ func getModuleFileUploadUrl(w http.ResponseWriter, r *http.Request) {
 	common.WriteJson(c, w, uploadUrl.Path)
 }
 
+// Upload a file to a module
 func uploadModuleFile(w http.ResponseWriter, r *http.Request) {
 	c := appengine.NewContext(r)
 	vars := mux.Vars(r)

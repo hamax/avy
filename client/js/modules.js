@@ -1,14 +1,18 @@
+// Module list page
 app.controller('ModulesCtrl', function($scope, $location, api) {
 	api.listModules({}, function(result) {
 		$scope.modules = result;
 	});
 
+	// Open a module
 	$scope.click = function(module) {
 		$location.path('/modules/' + module.Devname + '/' + module.Name + '/');
 	};
 });
 
+// New module page
 app.controller('NewModuleCtrl', function($scope, $location, api) {
+	// Create a new module
 	$scope.create = function() {
 		api.newModule($scope.module, function(response) {
 			$location.path('/modules/' + response.Devname + '/' + response.Name + '/');
@@ -16,7 +20,7 @@ app.controller('NewModuleCtrl', function($scope, $location, api) {
 	};
 });
 
-
+// Module page
 app.controller('ModuleCtrl', function($scope, $routeParams, api, fileApi) {
 	$scope.devname = $routeParams.devname;
 	$scope.name = $routeParams.name;
@@ -25,6 +29,7 @@ app.controller('ModuleCtrl', function($scope, $routeParams, api, fileApi) {
 		$scope.update(result);
 	});
 
+	// Check if we have write access for this module
 	$scope.readOnly = function() {
 		return !$scope.data || $scope.data.Owner != settings.user;
 	};
@@ -37,6 +42,7 @@ app.controller('ModuleCtrl', function($scope, $routeParams, api, fileApi) {
 		'js': 0
 	};
 
+	// Update if there was a change to the file list
 	$scope.update = function(data) {
 		$scope.data = data;
 

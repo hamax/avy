@@ -1,24 +1,30 @@
 app.service('fileApi', function() {
+	// Iframe for the file API (hosted files must be download on the unsafe domain)
 	var iframe = $('<iframe src="http://anif.' + settings.domain + settings.port + '/framework/api.html" style="display: none"></iframe>'),
 		ready = false, messages = {}, nextId = 0;
 	iframe.load(function() {
+		// File API iframe is now ready
 		ready = true;
+		// Check for queued requests
 		for (var id in messages) {
 			send(messages[id]);
 		}
 	});
 	$('body').append(iframe);
 
+	// Send message to the file API iframe
 	function send(msg) {
 		iframe[0].contentWindow.postMessage(msg.content, 'http://anif.' + settings.domain + settings.port);
 	}
 
+	// Listen for messages from the file API iframe
 	window.addEventListener('message', function(event) {
 		if (event.origin == 'http://anif.' + settings.domain + settings.port && event.data.type == 'fileapi') {
 			messages[event.data.id].callback(event.data.content);
 		}
 	}, false);
 
+	// Get a file using the file API
 	this.getFile = function(url, callback) {
 		var msg = {
 			'callback': callback,
@@ -53,7 +59,9 @@ app.controller('CodeEditorCtrl', function($scope, $routeParams, $dialog, api, fi
 		'avy': 'text/javascript'
 	};
 
+	// Watch for changes in the file list
 	$scope.$watch('files', function() {
+		// If active file is not set, select one
 		if (!$scope.activeFile) {
 			for (var i = 0; $scope.files && i < $scope.files.length; i++) {
 				if ($scope.files[i].length) {
@@ -62,6 +70,7 @@ app.controller('CodeEditorCtrl', function($scope, $routeParams, $dialog, api, fi
 				}
 			}
 		}
+		// If readme is not yet set, check if it's in the file list
 		if (!$scope.readme) {
 			for (var i = 0; $scope.files && i < $scope.files.length; i++) {
 				for (var j = 0; j < $scope.files[i].length; j++) {
@@ -76,6 +85,7 @@ app.controller('CodeEditorCtrl', function($scope, $routeParams, $dialog, api, fi
 				$scope.selected.code = true;
 			}
 		}
+		// If avyjs is not jey set, check if it's in the file list
 		if (!$scope.avyjs) {
 			for (var i = 0; $scope.files && i < $scope.files.length; i++) {
 				for (var j = 0; j < $scope.files[i].length; j++) {
@@ -92,6 +102,7 @@ app.controller('CodeEditorCtrl', function($scope, $routeParams, $dialog, api, fi
 		}
 	});
 
+	// Load readme file
 	$scope.loadReadme = function(file) {
 		$scope.readme = 'loading...';
 		fileApi.getFile(file.url, function(content) {
@@ -101,6 +112,7 @@ app.controller('CodeEditorCtrl', function($scope, $routeParams, $dialog, api, fi
 		});
 	};
 
+	// Select a file in the sidebar
 	$scope.selectFile = function(file) {
 		$scope.activeFile = file.Filename;
 		$scope.editor = '';
@@ -112,6 +124,7 @@ app.controller('CodeEditorCtrl', function($scope, $routeParams, $dialog, api, fi
 		});
 	};
 
+	// Delete a file
 	$scope.deleteFile = function(file) {
 		$dialog.messageBox(
 			'Confirmation',

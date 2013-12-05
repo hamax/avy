@@ -22,6 +22,7 @@ func visualizationsInit(s *mux.Router) {
 	s.HandleFunc("/{key}/files/{action}", postVisualizationFile).Methods("POST")
 }
 
+// Get a list of visualizations
 func listVisualizations(w http.ResponseWriter, r *http.Request) {
 	c := appengine.NewContext(r)
 
@@ -56,6 +57,7 @@ func listVisualizations(w http.ResponseWriter, r *http.Request) {
 	common.WriteJson(c, w, output)
 }
 
+// Create a new visualization
 func newVisualization(w http.ResponseWriter, r *http.Request) {
 	c := appengine.NewContext(r)
 	u := user.Current(c)
@@ -76,6 +78,7 @@ func newVisualization(w http.ResponseWriter, r *http.Request) {
 	common.WriteJson(c, w, map[string]*datastore.Key{"key": key})
 }
 
+// Get details about a visualization
 func getVisualization(w http.ResponseWriter, r *http.Request) {
 	c := appengine.NewContext(r)
 	vars := mux.Vars(r)
@@ -107,6 +110,7 @@ func getVisualization(w http.ResponseWriter, r *http.Request) {
 	common.WriteJson(c, w, res)
 }
 
+// Seat a title for a visualization
 func setVisualizationTitle(w http.ResponseWriter, r *http.Request) {
 	c := appengine.NewContext(r)
 	vars := mux.Vars(r)
@@ -158,6 +162,7 @@ func setVisualizationTitle(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
+// Get an URL for uploading a file to a visualization
 func getVisualizationFileUploadUrl(w http.ResponseWriter, r *http.Request) {
 	c := appengine.NewContext(r)
 	vars := mux.Vars(r)
@@ -171,6 +176,7 @@ func getVisualizationFileUploadUrl(w http.ResponseWriter, r *http.Request) {
 	common.WriteJson(c, w, uploadUrl.Path)
 }
 
+// Upload a file to a visualization
 func postVisualizationFile(w http.ResponseWriter, r *http.Request) {
 	c := appengine.NewContext(r)
 	vars := mux.Vars(r)

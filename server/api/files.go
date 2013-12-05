@@ -8,6 +8,7 @@ import (
 	"server/model"
 )
 
+// Common function for uploading a file
 func uploadFile(c appengine.Context, r *http.Request, currentFiles []model.File) ([]model.File, error) {
 	// Parse file uploads
 	blobs, _, err := blobstore.ParseUpload(r)
@@ -44,6 +45,7 @@ func uploadFile(c appengine.Context, r *http.Request, currentFiles []model.File)
 	return currentFiles, nil
 }
 
+// Common function for deleating a file
 func deleteFile(c appengine.Context, r *http.Request, files []model.File) ([]model.File, error) {
 	filename := r.PostFormValue("filename")
 

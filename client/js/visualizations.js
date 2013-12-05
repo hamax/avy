@@ -1,17 +1,21 @@
+// Visualization list page
 app.controller('VisualizationsCtrl', function($scope, $location, api) {
 	api.listVisualizations({}, function(result) {
 		$scope.visualizations = result;
 	});
 
+	// Get a preview image url
 	$scope.getPreview = function(visualization) {
 		return 'http://anif.' + settings.domain + settings.port + '/visualizations/' + visualization.Key + '/preview.svg';
 	};
 
+	// Open a visualization
 	$scope.click = function(key) {
 		$location.path('/visualizations/' + key + '/');
 	};
 });
 
+// Visualization page
 app.controller('VisualizationCtrl', function($scope, $routeParams, api, fileApi) {
 	$scope.key = $routeParams.key;
 	$scope.selected = {preview: true, code: false};
@@ -19,10 +23,12 @@ app.controller('VisualizationCtrl', function($scope, $routeParams, api, fileApi)
 		$scope.update(result);
 	});
 
+	// Check if we have write access
 	$scope.readOnly = function() {
 		return !$scope.data || $scope.data.Owner != settings.user;
 	};
 
+	// Save changed title to the database
 	$scope.saveTitle = function() {
 		api.setVisualizationTitle($scope.key, $scope.data.Title);
 	};
@@ -33,6 +39,7 @@ app.controller('VisualizationCtrl', function($scope, $routeParams, api, fileApi)
 		'in': 2
 	};
 
+	// Update if the was a change to the file list
 	$scope.update = function(data) {
 		$scope.data = data;
 
@@ -65,11 +72,13 @@ app.controller('VisualizationCtrl', function($scope, $routeParams, api, fileApi)
 		}
 	};
 
+	// Select .avy file for preview
 	$scope.selectAvy = function(file) {
 		$scope.activeAvy = file.Filename;
 	};
 });
 
+// Content editable field (used for title)
 app.directive('contenteditable', function() {
 	return {
 		require: 'ngModel',
@@ -98,11 +107,13 @@ app.directive('contenteditable', function() {
 	};
 });
 
+// Visualization preview field
 app.directive('visualizationPreview', function() {
 	return {
 		link: function(scope, elm, attrs, ctrl) {
 			var iframe = null, current = null;
 
+			// Load frame for current .avy file and listen for changes
 			scope.$watch('activeAvy', function() {
 				if (scope.activeAvy == current) {
 					return;
@@ -124,8 +135,10 @@ app.directive('visualizationPreview', function() {
 				}
 			});
 
+			// Listen for messages from the visualization
 			window.addEventListener('message', function(event) {
 				if (event.origin == 'http://anif.' + settings.domain + settings.port && event.data.type == 'resize' && iframe) {
+					// Set iframe height to the height reported by the visualization
 					iframe.height(event.data.height);
 					iframe.css('display', 'block');
 				}

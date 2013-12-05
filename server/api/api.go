@@ -13,6 +13,7 @@ func Init(s *mux.Router) {
 	s.HandleFunc("/{path:.*}", api404)
 }
 
+// Serve a 404 error - object not found in the database etc.
 func api404(w http.ResponseWriter, r *http.Request) {
 	common.Serve404(w)
 }

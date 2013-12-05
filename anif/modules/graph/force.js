@@ -161,6 +161,7 @@ define(['d3', 'jquery'], function(d3, $) {
 		}
 	};
 
+	// Get index in the nodes array by id
 	force.prototype._nodeIndex = function(id) {
 		var index = -1;
 		for (var i = 0; i < this.nodes.length; i++) {
@@ -172,6 +173,7 @@ define(['d3', 'jquery'], function(d3, $) {
 		return index;
 	};
 
+	// Get index in the links array by source and target id
 	force.prototype._linkIndex = function(source, target) {
 		var index = -1;
 		for (var i = 0; i < this.links.length; i++) {
@@ -183,6 +185,7 @@ define(['d3', 'jquery'], function(d3, $) {
 		return index;
 	}
 
+	// Tick in the physics of the d3 force layout (nodes can change positions)
 	force.prototype._forceTick = function() {
 		// Update position, make sure it's without transitions
 		this.linkStyle.updatePosition(this.link, this.links, true);

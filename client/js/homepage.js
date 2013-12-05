@@ -1,4 +1,5 @@
 app.controller('HomepageCtrl', function($scope) {
+	// Slides for carousel
 	$scope.slides = [
 		{
 			image: '/img/h1.png',

@@ -79,6 +79,7 @@ define(['d3', 'jquery'], function(d3, $) {
 		return r;
 	};
 
+	// Get index in the nodes array by id
 	list.prototype._nodeIndex = function(id) {
 		var index = -1;
 		for (var i = 0; i < this.nodes.length; i++) {

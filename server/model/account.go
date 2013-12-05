@@ -6,7 +6,9 @@ import (
 	"appengine/datastore"
 )
 
+// User information local to this application
 type Account struct {
+	// Name used for module namespace
 	Devname string
 }
 
