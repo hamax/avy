@@ -37,7 +37,7 @@ app.controller('VisualizationsCtrl', function($scope, $location, api) {
 // Visualization page
 app.controller('VisualizationCtrl', function($scope, $routeParams, api, fileApi) {
 	$scope.key = $routeParams.key;
-	$scope.selected = {preview: true, code: false};
+	$scope.selected = {preview: true, code: false, embed: false};
 	api.getVisualization($scope.key, function(result) {
 		$scope.update(result);
 	});

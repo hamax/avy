@@ -46,9 +46,9 @@ define(['d3', 'jquery-ui'], function(d3, $) {
 	svg.prototype._updateHeight = function() {
 		this.el.attr('height', this.layout.height);
 
-		var top = (window.location.hash.substr(1) + '&').split('&')[1];
+		var args = (window.location.hash.substr(1) + '&').split('&'), top = args[1], ref = args[2];
 		if (window.top != window.self && top) {
-			window.top.postMessage({'type': 'resize', 'height': $('body').height()}, top);
+			window.top.postMessage({'type': 'resize', 'height': $('body').height(), 'ref': ref}, top);
 		}
 	};
 

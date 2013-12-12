@@ -44,5 +44,20 @@
 				</div>
 			</div>
 		</tab>
+		<tab heading="Embed" active="selected.embed">
+			<h2>Dynamic height iframe</h2>
+			<p>Place this tag where you want the visualization to render.</p>
+			<pre>
+&lt;div class="avy-visualization" data-href="http://anif.algoviz.net/visualizations/{{key}}/#{{activeAvy}}"&gt;&lt;/div&gt;
+</pre>
+			<p>Place this tag anywhere after the visualization (like before your close body tag or right after the visualization). If you have multiple visualizations on the same page place only once.</p>
+			<pre>
+&lt;script src="http://anif.algoviz.net/framework/embed.js"&gt;&lt;/script&gt;
+</pre>
+			<h2>Fixed height iframe</h2>
+			<pre>
+&lt;iframe src="http://anif.algoviz.net/visualizations/{{key}}/#{{activeAvy}}" frameborder="0" style="width: 100%; display: block;"&gt;&lt;/iframe&gt;
+</pre>
+		</tab>
 	</tabset>
 </div>
