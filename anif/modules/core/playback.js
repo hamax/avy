@@ -19,12 +19,28 @@
 
 define(['jquery-ui'], function($) {
 	function playback() {
-
+		// Listen for commands
+		window.addEventListener('message', function(event) {
+			if (event.data.type == 'playback') {
+				if (event.data.action == 'toggle' ||
+						event.data.action == 'play' && this.play == false ||
+						event.data.action == 'pause' && this.play == true) {
+					this._playClick();
+				}
+			}
+		}.bind(this), false);
 	}
 
 	playback.prototype.load = function(v) {
 		this.v = v;
-		var filename = window.location.hash.substr(1).split('&')[0];
+
+		// Parse arguments from url
+		var args = (window.location.hash.substr(1) + '&').split('&'), top = args[1], ref = args[2];
+		var args_options = args[0].split(','), filename = args_options[0], options = {};
+		for (var i = 1; i < args_options.length; i++) {
+			options[args_options[i]] = true;
+		}
+
 		d3.xhr(filename, 'text/plain', function(r) {
 			// Parse avy file into this.steps
 			var lines = r.response.replace('\r\n', '\n').trim().split('\n'), index = 0;
@@ -40,14 +56,15 @@ define(['jquery-ui'], function($) {
 				this.steps.pop();
 			}
 
-			// We start with autoplay and step -1 (step 0 is after initial setup)
-			this.play = true;
+			// Check arguments if it should start paused
+			this.play = !options.paused;
+			// Step 0 is after initial setup
 			this.step = -1;
 
 			// Init buttons and slider
 			$('.playback .play').button({
 				icons: {
-					primary: 'ui-icon-pause'
+					primary: this.play ? 'ui-icon-pause' : 'ui-icon-play'
 				},
 				text: false
 			}).click(this._playClick.bind(this));
@@ -68,8 +85,15 @@ define(['jquery-ui'], function($) {
 			}
 
 			// Show controls
-			$('.controls').css('display', 'block');
-			$('.playback').css('display', 'block');
+			if (!options.nocontrols) {
+				$('.controls').css('display', 'block');
+				$('.playback').css('display', 'block');
+			}
+
+			// Ready to receive commands
+			if (window.top != window.self && top) {
+				window.top.postMessage({'type': 'ready', 'ref': ref}, top);
+			}
 		}.bind(this));
 	};
 

@@ -33,7 +33,6 @@ define(['d3', 'jquery-ui'], function(d3, $) {
 		}).click(this._saveClick.bind(this));
 
 		// Show controls
-		$('.controls').css('display', 'block');
 		$('.controls .save').css('display', 'block');
 	}
 
